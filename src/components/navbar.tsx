@@ -17,7 +17,7 @@ export const NavBar = (props: PropsWithChildren) =>
                 </a>
             </div>
 
-            <div className="flex flex-1 md:w-1/3 justify-center md:justify-start text-white ">
+            <div className="flex flex-1 md:w-full justify-center md:justify-start text-white ">
                 <span className="relative w-full">
                     <input aria-label="search" type="search" id="search" placeholder="Search" className="w-full bg-gray-900 text-white transition border border-transparent focus:outline-none focus:border-gray-400 rounded py-3 px-2 pl-10 appearance-none leading-normal" />
                     <div className="absolute search-icon" style={{top: "1rem", left: ".8rem"}}>
@@ -28,15 +28,15 @@ export const NavBar = (props: PropsWithChildren) =>
                 </span>
             </div>
 
-            <div className="flex w-full pt-2 content-center justify-between md:w-1/3 md:justify-end">
+            <div className="flex  pt-2 content-center justify-between md:w-1/6 md:justify-end">
                 <ul className="list-reset flex justify-between flex-1 md:flex-none items-center">
 
 
                     <li className="flex-1 md:flex-none md:mr-3">
                         <div className="relative inline-block">
-                            <button className="drop-button text-white py-2 px-2"> <span className="pr-2"><i className="em em-robot_face"></i></span> 
-                            {sessionData ? <span>Hi, {sessionData.user?.name}</span> : <span>Sign In</span>} <svg className="h-3 fill-current inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg></button>
+                            <button  onClick={sessionData ? () => void signOut() : () => void signIn()} className="drop-button text-white py-2 px-2 rounded hover:bg-white/20"> 
+                            {sessionData ? <span>Hi, {sessionData.user?.name}</span> : <span >Sign In</span>}                           
+                            </button>
                             <div id="myDropdown" className="dropdownlist absolute bg-gray-800 text-white right-0 mt-3 p-3 overflow-auto z-30 invisible">
                                 <input type="text" className="drop-search p-2 text-gray-600" placeholder="Search.." id="myInput"  />
                                 <a href="#" className="p-2 hover:bg-gray-800 text-white text-sm no-underline hover:no-underline block"><i className="fa fa-user fa-fw"></i> Profile</a>

@@ -15,7 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <NavBar></NavBar>
-      <main className="flex min-h-screen flex-row items-start justify-start bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="flex min-h-screen flex-row items-start  bg-gradient-to-b from-[#161636] to-[#080811]">
       <LeftNav></LeftNav>
       
       <Component {...pageProps} />
