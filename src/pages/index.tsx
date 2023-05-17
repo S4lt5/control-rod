@@ -7,7 +7,7 @@ import { api } from '~/utils/api';
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: 'from tRPC' });
-  const findings = api.findings.getFindings.useQuery();
+  const { data: findings } = api.findings.getFindings.useQuery();
   return (
     <>
       <Head>
@@ -25,32 +25,24 @@ const Home: NextPage = () => {
                 <th className="border border-gray-600">Severity</th>
                 <th className="border border-gray-600">Host</th>
                 <th className="border border-gray-600">Description</th>
-                <th className="border border-gray-600">Type</th>
-                <th className="border border-gray-600">URL</th>
                 <th className="border border-gray-600">Template</th>
               </tr>
             </thead>
             <tbody>
               {findings &&
-                findings.data.map((f) => (
-                  <tr className="even:bg-white/5 " key={f.finding}>
+                findings.map((f) => (
+                  <tr className="even:bg-white/5 " key={f.timestamp}>
                     <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.finding}
+                      {f.info.name}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.severity}
+                      {f.info.severity}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
                       {f.host}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.description}
-                    </td>
-                    <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.type}
-                    </td>
-                    <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.url}
+                      {f.info.description}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
                       {f.template}
