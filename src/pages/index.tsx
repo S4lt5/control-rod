@@ -1,16 +1,13 @@
-import { type NextPage } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { type NextPage } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
-import { api } from "~/utils/api";
+import { api } from '~/utils/api';
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const findings = [
-    { finding: "foo", host: "foobar", id: "1" },
-    { finding: "bar" },
-  ];
+  const hello = api.example.hello.useQuery({ text: 'from tRPC' });
+  const findings = api.findings.getFindings.useQuery();
   return (
     <>
       <Head>
@@ -29,42 +26,37 @@ const Home: NextPage = () => {
                 <th className="border border-gray-600">Host</th>
                 <th className="border border-gray-600">Description</th>
                 <th className="border border-gray-600">Type</th>
-
                 <th className="border border-gray-600">URL</th>
-                <th className="border border-gray-600">Severity</th>
-
-                <th>Template</th>
+                <th className="border border-gray-600">Template</th>
               </tr>
             </thead>
             <tbody>
-              {findings.map((finding) => (
-                <tr className="even:bg-white/5 " key={finding.id}>
-                  <td className="border border-y-0 border-l-0 border-gray-700">
-                    {finding.finding}
-                  </td>
-                  <td className="border border-y-0 border-gray-700">
-                    {finding.Severity}
-                  </td>
-                  <td className="border border-y-0 border-gray-700">
-                    {finding.host}
-                  </td>
-                  <td className="border border-y-0 border-gray-700">
-                    {finding.Description}
-                  </td>
-                  <td className="border border-y-0 border-gray-700">
-                    {finding.Type}
-                  </td>
-                  <td className="border border-y-0 border-gray-700">
-                    {finding.URL}
-                  </td>
-                  <td className="border border-y-0 border-gray-700">
-                    {finding.Severity}
-                  </td>
-                  <td className="border border-y-0 border-r-0 border-gray-700">
-                    {finding.Template}
-                  </td>
-                </tr>
-              ))}
+              {findings &&
+                findings.data.map((f) => (
+                  <tr className="even:bg-white/5 " key={f.finding}>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.finding}
+                    </td>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.severity}
+                    </td>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.host}
+                    </td>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.description}
+                    </td>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.type}
+                    </td>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.url}
+                    </td>
+                    <td className="border border-y-0 border-l-0 border-gray-700">
+                      {f.template}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -94,7 +86,7 @@ const Home: NextPage = () => {
         </div>
         <div className="flex flex-col items-center gap-2">
           <p className="text-2xl text-white">
-            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
+            {hello.data ? hello.data.greeting : 'Loading tRPC query...'}
           </p>
           <AuthShowcase />
         </div>

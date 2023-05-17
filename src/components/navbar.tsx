@@ -1,6 +1,6 @@
-import { type NextComponentType } from "next";
-import { PropsWithChildren } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { type NextComponentType } from 'next';
+import { PropsWithChildren } from 'react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 export const NavBar = (props: PropsWithChildren) => {
   const { data: sessionData } = useSession();
@@ -31,7 +31,7 @@ export const NavBar = (props: PropsWithChildren) => {
               />
               <div
                 className="search-icon absolute"
-                style={{ top: "1rem", left: ".8rem" }}
+                style={{ top: '1rem', left: '.8rem' }}
               >
                 <svg
                   className="pointer-events-none h-4 w-4 fill-current text-white"

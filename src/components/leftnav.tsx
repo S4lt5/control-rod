@@ -1,6 +1,6 @@
-import { type NextComponentType } from "next";
-import { PropsWithChildren } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { type NextComponentType } from 'next';
+import { PropsWithChildren } from 'react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 export const LeftNav = (props: PropsWithChildren) => {
   return (
