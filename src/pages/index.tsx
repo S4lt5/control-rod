@@ -32,10 +32,8 @@ function createCompareFn<T extends object>(
   return compareFn;
 }
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: 'from tRPC' });
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
-  const f2 = api.findings.getFindings.useQuery();
   return (
     <>
       <Head>
@@ -134,9 +132,6 @@ const Home: NextPage = () => {
           </Link>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello.data ? hello.data.greeting : 'Loading tRPC query...'}
-          </p>
           <AuthShowcase />
         </div>
       </div>

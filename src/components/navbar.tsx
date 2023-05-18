@@ -9,7 +9,7 @@ export const NavBar = (props: PropsWithChildren) => {
     <header>
       <nav
         aria-label="menu nav"
-        className="fixed top-0 z-20 mt-0 h-auto w-full bg-gray-800 px-1 pb-1 pt-2 md:pt-1"
+        className="fixed top-0 z-10 mt-0 h-auto w-full bg-gray-800 px-1 pb-1 pt-2 md:pt-1"
       >
         <div className="flex flex-wrap items-center">
           <div className="flex flex-shrink  text-white md:w-48 ">

@@ -7,8 +7,8 @@ export const PageLayout = (props: PropsWithChildren) => {
   return (
     <>
       <NavBar></NavBar>
-      <main className="flex min-h-screen flex-row items-start  bg-gradient-to-b from-[#161636] to-[#080811]">
-        <LeftNav></LeftNav>
+      <LeftNav></LeftNav>
+      <main className="static min-h-screen items-start bg-gradient-to-b from-[#161636] to-[#080811] pl-48">
         {props.children}
       </main>
     </>

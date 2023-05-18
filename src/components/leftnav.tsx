@@ -5,7 +5,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 export const LeftNav = (props: PropsWithChildren) => {
   return (
     <nav aria-label="alternative nav">
-      <div className="fixed bottom-0 z-10 mt-12 h-20 w-full content-center bg-gray-800 shadow-xl md:relative md:h-screen md:w-48">
+      <div className="z-5 fixed bottom-0 mt-12 h-20 w-full content-center bg-gray-800 shadow-xl  md:h-screen md:w-48">
         <div className="content-center justify-between text-left md:fixed md:left-0 md:top-0 md:mt-12 md:w-48 md:content-start">
           <ul className="list-reset flex flex-row px-1 pt-3 text-center md:flex-col md:px-2 md:py-3 md:text-left">
             <li className="mr-3 flex-1">
