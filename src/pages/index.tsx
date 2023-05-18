@@ -4,10 +4,38 @@ import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
 import { api } from '~/utils/api';
+function createCompareFn<T extends object>(
+  property: keyof T,
+  sort_order: 'asc' | 'desc'
+) {
+  const compareFn = (a: T, b: T) => {
+    const val1 = a[property];
+    const val2 = b[property];
+    const order = sort_order !== 'desc' ? 1 : -1;
 
+    switch (typeof val1) {
+      case 'number': {
+        const valb = val2 as number;
+        const result = val1 - valb;
+        return result * order;
+      }
+      case 'string': {
+        const valb = val2 as string;
+        const result = val1.localeCompare(valb);
+        return result * order;
+      }
+      // add other cases like boolean, etc.
+      default:
+        return 0;
+    }
+  };
+  return compareFn;
+}
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: 'from tRPC' });
-  const { data: findings } = api.findings.getFindings.useQuery();
+  const { data: findings, status: findingsStatus } =
+    api.findings.getFindings.useQuery();
+  const f2 = api.findings.getFindings.useQuery();
   return (
     <>
       <Head>
@@ -30,19 +58,19 @@ const Home: NextPage = () => {
             </thead>
             <tbody>
               {findings &&
-                findings.map((f) => (
+                findings.sort(createCompareFn('severity', 'asc')).map((f) => (
                   <tr className="even:bg-white/5 " key={f.timestamp}>
                     <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.info.name}
+                      {f.name}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.info.severity}
+                      {f.severity}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
                       {f.host}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.info.description}
+                      {f.description}
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
                       {f.template}
@@ -52,6 +80,35 @@ const Home: NextPage = () => {
             </tbody>
           </table>
         </div>
+        {findingsStatus && findingsStatus == 'loading' && (
+          <button
+            type="button"
+            className="inline-flex cursor-not-allowed items-center rounded-md bg-white px-4 py-2 text-sm font-semibold leading-6 text-white shadow transition duration-150 ease-in-out hover:bg-indigo-400"
+            disabled
+          >
+            <svg
+              className="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Loading...
+          </button>
+        )}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           <Link
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
