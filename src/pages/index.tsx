@@ -83,7 +83,7 @@ const Home: NextPage = () => {
         {findingsStatus && findingsStatus == 'loading' && (
           <button
             type="button"
-            className="inline-flex cursor-not-allowed items-center rounded-md bg-white px-4 py-2 text-sm font-semibold leading-6 text-white shadow transition duration-150 ease-in-out hover:bg-indigo-400"
+            className="inline-flex cursor-not-allowed items-center rounded-md  bg-indigo-400 px-4 py-2 text-sm font-semibold leading-6 text-white shadow transition duration-150 ease-in-out"
             disabled
           >
             <svg
