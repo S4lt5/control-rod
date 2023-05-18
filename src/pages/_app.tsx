@@ -1,7 +1,7 @@
 import { type AppType } from 'next/app';
 import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-
+import { PageLayout } from '~/components/layout';
 import { api } from '~/utils/api';
 
 import '~/styles/globals.css';
@@ -14,12 +14,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <NavBar></NavBar>
-      <main className="flex min-h-screen flex-row items-start  bg-gradient-to-b from-[#161636] to-[#080811]">
-        <LeftNav></LeftNav>
-
+      <PageLayout>
         <Component {...pageProps} />
-      </main>
+      </PageLayout>
     </SessionProvider>
   );
 };
