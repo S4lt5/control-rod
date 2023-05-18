@@ -5,8 +5,6 @@ import { PageLayout } from '~/components/layout';
 import { api } from '~/utils/api';
 
 import '~/styles/globals.css';
-import { NavBar } from '~/components/navbar';
-import { LeftNav } from '~/components/leftnav';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
