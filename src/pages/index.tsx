@@ -2,7 +2,7 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { signIn, signOut, useSession } from 'next-auth/react';
-
+import { severity } from '~/shared/finding';
 import { api } from '~/utils/api';
 function createCompareFn<T extends object>(
   property: keyof T,
@@ -56,13 +56,42 @@ const Home: NextPage = () => {
             </thead>
             <tbody>
               {findings &&
-                findings.sort(createCompareFn('severity', 'asc')).map((f) => (
+                findings.sort(createCompareFn('severity', 'desc')).map((f) => (
                   <tr className="even:bg-white/5 " key={f.timestamp}>
                     <td className="border border-y-0 border-l-0 border-gray-700">
                       {f.name}
                     </td>
-                    <td className="border border-y-0 border-l-0 border-gray-700">
-                      {f.severity}
+                    <td className=" border border-y-0 border-l-0 border-gray-700 ">
+                      <span
+                        className={`${
+                          f.severity == severity.critical
+                            ? 'm-2 rounded bg-red-400 p-2'
+                            : ''
+                        }
+                        ${
+                          f.severity == severity.high
+                            ? 'm-2 rounded bg-orange-400 p-2'
+                            : ''
+                        }
+                        ${
+                          f.severity == severity.medium
+                            ? 'm-2 rounded bg-yellow-400 p-2 text-black'
+                            : ''
+                        }
+                         ${
+                           f.severity == severity.low
+                             ? 'm-2 rounded bg-green-400 p-2'
+                             : ''
+                         }
+                            ${
+                              f.severity == severity.info
+                                ? 'm-2 rounded bg-white p-2 text-black'
+                                : ''
+                            }
+                         `}
+                      >
+                        {severity[f.severity]}
+                      </span>
                     </td>
                     <td className="border border-y-0 border-l-0 border-gray-700">
                       {f.host}

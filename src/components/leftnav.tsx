@@ -2,7 +2,7 @@ import { type NextComponentType } from 'next';
 import { PropsWithChildren } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
-export const LeftNav = (props: PropsWithChildren) => {
+export const LeftNav = () => {
   return (
     <nav aria-label="alternative nav">
       <div className="z-5 fixed bottom-0 mt-12 h-20 w-full content-center bg-gray-800 shadow-xl  md:h-screen md:w-48">
