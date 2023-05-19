@@ -7,6 +7,7 @@ import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
+import moment from 'moment';
 
 function createFilterFn<T extends finding>(query: string) {
   const filterFn = (f: finding) => {
@@ -110,17 +111,17 @@ const Home: NextPage = () => {
                           <div className="flex flex-row ">
                             <div className="w-24 shrink">
                               <button className="align-center m-2 w-10 rotate-180 justify-center rounded bg-indigo-400 p-2">
-                                <img src="/expand.svg"></img>
+                                <img src="expand.svg"></img>
                               </button>
                             </div>
-                            <div className="align-center flex grow basis-1/2 flex-col justify-center py-4">
+                            <div className=" flex grow basis-1/2 flex-col justify-start py-4">
                               <p>Vulnerability Information: </p>
                               <SeverityLabel {...f}></SeverityLabel>
                               <span className="border-b-2 border-slate-400 text-xl">
                                 {f.name}
                               </span>
-                              <p className="mt-4">{f.description}</p>
-                              <div className="">
+                              <p>{f.description}</p>
+                              <div className="my-4">
                                 <p>References</p>
                                 <ul className="ml-10">
                                   {f &&
@@ -138,7 +139,40 @@ const Home: NextPage = () => {
                                 </ul>
                               </div>
                             </div>
-                            <div className="grow basis-1/2">test</div>
+                            <div className="flex grow basis-1/2 flex-col  py-4 pl-4">
+                              <ul className="flex grow flex-col justify-start">
+                                <li> Scan Information: </li>
+                                <li>
+                                  Host:
+                                  <a
+                                    className="ml-2 text-slate-400 hover:underline"
+                                    href={f.host}
+                                  >
+                                    {f.host}
+                                  </a>
+                                </li>
+                                <li>
+                                  Template:
+                                  <a
+                                    className="ml-2 text-slate-400 hover:underline"
+                                    href={
+                                      'https://github.com/projectdiscovery/nuclei-templates/tree/main/' +
+                                      f.template
+                                    }
+                                  >
+                                    {f.template}
+                                  </a>
+                                </li>
+                                <li>
+                                  Last Seen:{' '}
+                                  {moment(f.timestamp).format('MM/DD/YY kk:mm')}
+                                </li>
+                              </ul>
+                              <ul className="flex grow flex-col">
+                                <li>Disclosure Information: </li>
+                                <li>Ticket Status: Unknown</li>
+                              </ul>
+                            </div>
                           </div>
                         </td>
                       </tr>

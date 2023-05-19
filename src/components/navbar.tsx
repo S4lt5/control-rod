@@ -14,10 +14,9 @@ export const NavBar = () => {
       >
         <div className="flex flex-wrap items-center">
           <div className="flex flex-shrink  text-white md:w-48 ">
+            <img src="cr.png" className="m-y-0 h-14 pl-8" />
             <a href="#" aria-label="Home">
-              <span className="pl-2 text-xl ">
-                Control Rod<i className="em em-grinning"></i>
-              </span>
+              <span className="pl-2 text-xl "></span>
             </a>
           </div>
 
