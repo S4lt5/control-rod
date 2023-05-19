@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Used to apply even rows.. select the third row and every 4th row,... then it's next sibling (attached row detail) as well */
+.every_two_rows:nth-of-type(4n + 3) {
+  background-color: rgb(255 255 255 / 0.05);
+  & + .every_two_rows {
+    background-color: rgb(255 255 255 / 0.05);
+  }
+}

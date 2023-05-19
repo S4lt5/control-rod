@@ -1,14 +1,11 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useAtom } from 'jotai';
-
-import { useRef, useEffect } from 'react';
 import { atomSearch } from '~/shared/atoms';
-type Timer = ReturnType<typeof setTimeout>;
-type SomeFunction = (...args: any[]) => void;
 
 export const NavBar = () => {
   const { data: sessionData } = useSession();
   const [search, setSearch] = useAtom(atomSearch);
+
   return (
     <header>
       <nav
