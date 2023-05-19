@@ -89,8 +89,11 @@ const Home: NextPage = () => {
                   .filter(createFilterFn(search))
                   .map((f) => (
                     <>
-                      <tr className="every_two_rows" key={f.timestamp}>
-                        <td className="border border-y-0 border-l-0 border-gray-700">
+                      <tr
+                        className="every_two_rows hover:cursor-pointer hover:bg-white/20"
+                        key={f.timestamp}
+                      >
+                        <td className="border border-y-0 border-l-0 border-gray-700 ">
                           {f.name}
                         </td>
                         <td className=" border border-y-0 border-l-0 border-gray-700 ">

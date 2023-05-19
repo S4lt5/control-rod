@@ -33,6 +33,8 @@ class finding {
   severity: severity;
   tags: string[];
   reference: string[];
+  //If true, the finding is open in the UI for detail view
+  expanded: boolean;
 
   /**
    * Convert a nested finding into an equivalent (flat) finding
@@ -56,6 +58,7 @@ class finding {
     this.description = finding.info.description;
     this.tags = finding.info.tags;
     this.reference = finding.info.reference;
+    this.expanded = false;
   }
 }
 
