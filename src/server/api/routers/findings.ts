@@ -21,6 +21,7 @@ export const findingsRouter = createTRPCRouter({
     } catch {
       return [
         {
+          id: 'an-id',
           name: 'There was a problem reading the findings data.',
           description: '',
           reference: [],

@@ -1,6 +1,7 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { severity, type finding } from '~/shared/finding';
 import { api } from '~/utils/api';
@@ -59,6 +60,7 @@ const SeverityLabel = (f: finding) => {
 };
 
 const Home: NextPage = () => {
+  const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
@@ -90,8 +92,11 @@ const Home: NextPage = () => {
                   .map((f) => (
                     <>
                       <tr
+                        onClick={() => {
+                          setExpanded(f.id);
+                        }}
                         className="every_two_rows hover:cursor-pointer hover:bg-white/20"
-                        key={f.timestamp}
+                        key={f.id}
                       >
                         <td className="border border-y-0 border-l-0 border-gray-700 ">
                           {f.name}
@@ -110,10 +115,15 @@ const Home: NextPage = () => {
                         </td>
                       </tr>
                       <tr className="every_two_rows mt-4 border-x-2 border-y-2 border-gray-400">
-                        <td colSpan={5} className="">
+                        <td colSpan={5} className="" hidden={f.id !== expanded}>
                           <div className="flex flex-row ">
                             <div className="w-24 shrink">
-                              <button className="align-center m-2 w-10 rotate-180 justify-center rounded bg-indigo-400 p-2">
+                              <button
+                                className="align-center m-2 w-10 rotate-180 justify-center rounded bg-indigo-400 p-2"
+                                onClick={() => {
+                                  setExpanded('');
+                                }}
+                              >
                                 <img src="expand.svg"></img>
                               </button>
                             </div>

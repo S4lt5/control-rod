@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 enum severity {
   critical = 4,
   high = 3,
@@ -23,6 +25,7 @@ export interface nestedFinding {
 }
 
 class finding {
+  id: string;
   extractedResults: string;
   host: string;
   matchedAt: string;
@@ -41,6 +44,8 @@ class finding {
    * @param finding The source nested finding
    */
   constructor(finding: nestedFinding) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    this.id = uuidv4();
     this.extractedResults = finding.extractedResults;
     this.host = finding.host;
     this.matchedAt = finding.matchedAt;
