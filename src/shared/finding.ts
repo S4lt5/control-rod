@@ -19,7 +19,7 @@ export interface nestedFinding {
   extractedResults: string;
   host: string;
   info: findingInfo; // this exists in the source JSON
-  matchedAt: string;
+  'matched-at': string;
   template: string;
   timestamp: string;
 }
@@ -48,7 +48,8 @@ class finding {
     this.id = uuidv4();
     this.extractedResults = finding.extractedResults;
     this.host = finding.host;
-    this.matchedAt = finding.matchedAt;
+
+    this.matchedAt = finding['matched-at'];
     this.template = finding.template;
     this.timestamp = finding.timestamp;
     this.name = finding.info.name;

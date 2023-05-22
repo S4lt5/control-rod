@@ -177,6 +177,15 @@ const Home: NextPage = () => {
                                   </a>
                                 </li>
                                 <li>
+                                  Matched At:
+                                  <a
+                                    className="ml-2 text-slate-400 hover:underline"
+                                    href={f.matchedAt}
+                                  >
+                                    {f.matchedAt}
+                                  </a>
+                                </li>
+                                <li>
                                   Last Seen:{' '}
                                   {moment(f.timestamp).format('MM/DD/YY kk:mm')}
                                 </li>
