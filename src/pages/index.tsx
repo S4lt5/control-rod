@@ -12,6 +12,7 @@ import moment from 'moment';
 import { DisclosureStatusTag } from '~/components/disclosure-status';
 import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
+import { ScanInformationBlock } from '~/components/findings/scan-info-block';
 function createFilterFn<T extends finding>(query: string) {
   const filterFn = (f: finding) => {
     const lowerQuery = query.toLowerCase();
@@ -72,22 +73,24 @@ const Home: NextPage = () => {
                         className="every_two_rows hover:cursor-pointer hover:bg-white/20"
                         key={f.id}
                       >
-                        <td className="border border-y-0 border-l-0 border-gray-700 ">
+                        <td className="border border-y-0 border-l-0 border-gray-700  ">
                           {f.name}
                         </td>
-                        <td className=" m-2 border border-y-0 border-l-0 border-gray-700 text-center  ">
+                        <td className="border  border-y-0 border-l-0 border-gray-700 px-1 px-2 text-center  ">
                           <SeverityLabel sval={f.severity} />
                         </td>
-                        <td className="border border-y-0 border-l-0 border-gray-700">
+                        <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           {f.host}
                         </td>
-                        <td className="border border-y-0 border-l-0 border-gray-700">
+                        <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           {f.description}
                         </td>
-                        <td className="border border-y-0 border-l-0 border-gray-700">
-                          {f.disclosure?.status.toString() ?? 'Not Started'}
+                        <td className="border border-y-0 border-l-0 border-gray-700 px-1">
+                          <DisclosureStatusTag
+                            disclosure={f.disclosure}
+                          ></DisclosureStatusTag>
                         </td>
-                        <td className="border border-y-0 border-l-0 border-gray-700">
+                        <td className="border border-y-0 border-l-0 border-gray-700 px-2">
                           {f.template}
                         </td>
                       </tr>
@@ -110,43 +113,9 @@ const Home: NextPage = () => {
                               ></FindingsDetailBlock>
                             </div>
                             <div className="flex grow basis-1/2 flex-col  py-4 pl-4">
-                              <ul className="flex grow flex-col justify-start">
-                                <li> Scan Information: </li>
-                                <li>
-                                  Host:
-                                  <a
-                                    className="ml-2 text-slate-400 hover:underline"
-                                    href={f.host}
-                                  >
-                                    {f.host}
-                                  </a>
-                                </li>
-                                <li>
-                                  Template:
-                                  <a
-                                    className="ml-2 text-slate-400 hover:underline"
-                                    href={
-                                      'https://github.com/projectdiscovery/nuclei-templates/tree/main/' +
-                                      f.template
-                                    }
-                                  >
-                                    {f.template}
-                                  </a>
-                                </li>
-                                <li>
-                                  Matched At:
-                                  <a
-                                    className="ml-2 text-slate-400 hover:underline"
-                                    href={f.matchedAt}
-                                  >
-                                    {f.matchedAt}
-                                  </a>
-                                </li>
-                                <li>
-                                  Last Seen:{' '}
-                                  {moment(f.timestamp).format('MM/DD/YY kk:mm')}
-                                </li>
-                              </ul>
+                              <ScanInformationBlock
+                                finding={f}
+                              ></ScanInformationBlock>
                               <ul className="flex grow flex-col">
                                 <li>
                                   Disclosure Information:{' '}

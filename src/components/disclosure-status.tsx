@@ -6,7 +6,7 @@ type props = {
 export const DisclosureStatusTag: React.FC<props> = ({ disclosure }) => {
   return (
     <span
-      className={`m-2 w-min rounded  bg-white/80 p-1.5 capitalize text-black
+      className={` w-min rounded capitalize
      ${
        disclosure &&
        (disclosure.status == disclosureStatus.disclosed ||
@@ -23,8 +23,8 @@ export const DisclosureStatusTag: React.FC<props> = ({ disclosure }) => {
           : ''
       }
         ${
-          disclosure == null ||
-          (disclosure && disclosure.status == disclosureStatus.remediated)
+          !disclosure ||
+          (disclosure && disclosure.status == disclosureStatus.regression)
             ? 'text-red-500'
             : ''
         }

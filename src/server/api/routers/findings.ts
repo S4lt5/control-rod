@@ -1,6 +1,12 @@
 import path from 'path';
 import { promises as fs } from 'fs';
-import { finding, severity, type nestedFinding } from '~/shared/finding';
+import {
+  finding,
+  severity,
+  type nestedFinding,
+  disclosure,
+  disclosureStatus,
+} from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 
 export const severityEnum = severity;
