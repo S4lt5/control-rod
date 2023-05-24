@@ -10,7 +10,8 @@ import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
 import moment from 'moment';
 import { DisclosureStatusTag } from '~/components/disclosure-status';
-
+import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
+import { SeverityLabel } from '~/components/findings/severity-label';
 function createFilterFn<T extends finding>(query: string) {
   const filterFn = (f: finding) => {
     const lowerQuery = query.toLowerCase();
@@ -28,40 +29,6 @@ function createFilterFn<T extends finding>(query: string) {
   };
   return filterFn;
 }
-
-/* TODO: I should be able to just pass the severity in but I had problems with the syntax at the <SeverityLabel...>component -MG */
-const SeverityLabel = (f: finding) => {
-  return (
-    <span
-      className={`w-min capitalize ${
-        f.severity == severity.critical ? 'm-2 rounded bg-red-400 p-2' : ''
-      }
-                        ${
-                          f.severity == severity.high
-                            ? 'm-2 rounded bg-orange-400 p-2'
-                            : ''
-                        }
-                        ${
-                          f.severity == severity.medium
-                            ? 'm-2 rounded bg-yellow-400 p-2 text-black'
-                            : ''
-                        }
-                         ${
-                           f.severity == severity.low
-                             ? 'm-2 rounded bg-green-400 p-2'
-                             : ''
-                         }
-                            ${
-                              f.severity == severity.info
-                                ? 'm-2 rounded bg-white p-2 text-black'
-                                : ''
-                            }
-                         `}
-    >
-      {severity[f.severity]}
-    </span>
-  );
-};
 
 const Home: NextPage = () => {
   const [expanded, setExpanded] = useState('');
@@ -108,8 +75,8 @@ const Home: NextPage = () => {
                         <td className="border border-y-0 border-l-0 border-gray-700 ">
                           {f.name}
                         </td>
-                        <td className=" border border-y-0 border-l-0 border-gray-700 ">
-                          <SeverityLabel {...f} />
+                        <td className=" m-2 border border-y-0 border-l-0 border-gray-700 text-center  ">
+                          <SeverityLabel sval={f.severity} />
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700">
                           {f.host}
@@ -125,7 +92,7 @@ const Home: NextPage = () => {
                         </td>
                       </tr>
                       <tr className="every_two_rows mt-4 border-x-2 border-y-2 border-gray-400">
-                        <td colSpan={5} className="" hidden={f.id !== expanded}>
+                        <td colSpan={6} className="" hidden={f.id !== expanded}>
                           <div className="flex flex-row ">
                             <div className="w-24 shrink">
                               <button
@@ -138,29 +105,9 @@ const Home: NextPage = () => {
                               </button>
                             </div>
                             <div className=" flex grow basis-1/2 flex-col justify-start py-4">
-                              <p>Vulnerability Information: </p>
-                              <SeverityLabel {...f}></SeverityLabel>
-                              <span className="border-b-2 border-slate-400 text-xl">
-                                {f.name}
-                              </span>
-                              <p>{f.description}</p>
-                              <div className="my-4">
-                                <p>References</p>
-                                <ul className="ml-10">
-                                  {f &&
-                                    f.reference &&
-                                    f.reference.map((ref) => (
-                                      <li className=" list-disc" key={ref}>
-                                        <a
-                                          className="text-slate-400  hover:underline"
-                                          href={ref}
-                                        >
-                                          {ref}
-                                        </a>
-                                      </li>
-                                    ))}
-                                </ul>
-                              </div>
+                              <FindingsDetailBlock
+                                finding={f}
+                              ></FindingsDetailBlock>
                             </div>
                             <div className="flex grow basis-1/2 flex-col  py-4 pl-4">
                               <ul className="flex grow flex-col justify-start">

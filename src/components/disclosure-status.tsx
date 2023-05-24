@@ -30,7 +30,7 @@ export const DisclosureStatusTag: React.FC<props> = ({ disclosure }) => {
         }
      `}
     >
-      {disclosure == null && 'Not Started'}
+      {!disclosure && 'Not Started'}
       {disclosure && disclosureStatus[disclosure.status]}
     </span>
   );

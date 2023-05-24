@@ -22,22 +22,22 @@ export const LeftNav = () => {
             <li className="mr-3 flex-1">
               <a
                 href="#"
-                className="block border-b-2 border-gray-800 py-1 pl-1 align-middle text-white no-underline hover:border-purple-500 hover:text-white md:py-3"
+                className="block border-b-2 border-gray-800 py-1 pl-1 align-middle text-white no-underline hover:border-blue-600 hover:text-white md:py-3"
               >
-                <i className="fa fa-envelope pr-0 md:pr-3"></i>
-                <span className="block pb-1 text-xs text-gray-400 md:inline-block md:pb-0 md:text-base md:text-gray-200">
-                  Hosts
+                <i className="fas fa-chart-area pr-0 text-blue-600 md:pr-3"></i>
+                <span className="block pb-1 text-xs text-white md:inline-block md:pb-0 md:text-base md:text-white">
+                  Disclosures
                 </span>
               </a>
             </li>
             <li className="mr-3 flex-1">
               <a
                 href="#"
-                className="block border-b-2 border-gray-800 py-1 pl-1 align-middle text-white no-underline hover:border-blue-600 hover:text-white md:py-3"
+                className="block border-b-2 border-gray-800 py-1 pl-1 align-middle text-white no-underline hover:border-purple-500 hover:text-white md:py-3"
               >
-                <i className="fas fa-chart-area pr-0 text-blue-600 md:pr-3"></i>
-                <span className="block pb-1 text-xs text-white md:inline-block md:pb-0 md:text-base md:text-white">
-                  Disclosures
+                <i className="fa fa-envelope pr-0 md:pr-3"></i>
+                <span className="block pb-1 text-xs text-gray-400 md:inline-block md:pb-0 md:text-base md:text-gray-200">
+                  Hosts
                 </span>
               </a>
             </li>
