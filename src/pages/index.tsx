@@ -76,7 +76,7 @@ const Home: NextPage = () => {
                         <td className="border border-y-0 border-l-0 border-gray-700  ">
                           {f.name}
                         </td>
-                        <td className="border  border-y-0 border-l-0 border-gray-700 px-1 px-2 text-center  ">
+                        <td className="border  border-y-0 border-l-0 border-gray-700  px-1 text-center  ">
                           <SeverityLabel sval={f.severity} />
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
@@ -86,11 +86,9 @@ const Home: NextPage = () => {
                           {f.description}
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
-                          <DisclosureStatusTag
-                            disclosure={f.disclosure}
-                          ></DisclosureStatusTag>
+                          {f.disclosure?.status ?? 'Not Started'}
                         </td>
-                        <td className="border border-y-0 border-l-0 border-gray-700 px-2">
+                        <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           {f.template}
                         </td>
                       </tr>
@@ -119,9 +117,7 @@ const Home: NextPage = () => {
                               <ul className="flex grow flex-col">
                                 <li>
                                   Disclosure Information:{' '}
-                                  <DisclosureStatusTag
-                                    disclosure={f.disclosure}
-                                  ></DisclosureStatusTag>
+                                  {f.disclosure?.status ?? 'Not Started'}
                                 </li>
                                 <li>Ticket Status: Unknown</li>
                               </ul>
