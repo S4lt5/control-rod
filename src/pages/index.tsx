@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -97,12 +98,15 @@ const Home: NextPage = () => {
                           <div className="flex flex-row ">
                             <div className="w-24 shrink">
                               <button
-                                className="align-center m-2 w-10 rotate-180 justify-center rounded bg-indigo-400 p-2"
+                                className="align-center m-2 w-10 rotate-180 justify-center rounded bg-indigo-400 p-2 hover:bg-indigo-300"
                                 onClick={() => {
                                   setExpanded('');
                                 }}
                               >
-                                <img src="expand.svg"></img>
+                                <img
+                                  alt="expand finding"
+                                  src="expand.svg"
+                                ></img>
                               </button>
                             </div>
                             <div className=" flex grow basis-1/2 flex-col justify-start py-4">
@@ -118,6 +122,21 @@ const Home: NextPage = () => {
                                 <li>
                                   Disclosure Information:{' '}
                                   {f.disclosure?.status ?? 'Not Started'}
+                                </li>
+                                <li>
+                                  <button
+                                    className="inline-flex  items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-300"
+                                    onClick={() => {
+                                      setExpanded('');
+                                    }}
+                                  >
+                                    <img
+                                      alt="create new disclosure"
+                                      className="mr-2 h-8 w-8 fill-white"
+                                      src="new-document.svg"
+                                    ></img>{' '}
+                                    <span>Create new disclosure</span>
+                                  </button>
                                 </li>
                                 <li>Ticket Status: Unknown</li>
                               </ul>
