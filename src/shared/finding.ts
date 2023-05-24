@@ -1,3 +1,4 @@
+import { match } from 'assert';
 import { v4 as uuidv4 } from 'uuid';
 
 enum severity {
@@ -24,6 +25,60 @@ export interface nestedFinding {
   timestamp: string;
 }
 
+enum disclosureStatus {
+  disclosed,
+  remediated,
+  invalid, // the finding was proven to not be exploitable or otherwise a false positive
+  uncertain, // the finding MIGHT be exploitable, but it has not been demonstrated
+  regression,
+}
+/**
+ * A disclosure history is a list of previous status and the time they were recorded.
+ */
+class disclosureHistory {
+  timestamp: string;
+  status: disclosureStatus;
+
+  constructor(timestamp: string, status: disclosureStatus) {
+    this.timestamp = timestamp;
+    this.status = status;
+  }
+}
+
+/**
+ * A disclosure is a notification or ticket created to deal with a particular finding
+ */
+
+class disclosure {
+  id: string;
+  hosts: string[];
+  template: string;
+  timestamp: string;
+  status: disclosureStatus;
+  ticketURL: string;
+  history: disclosureHistory[];
+  matchedAt: string; //the specific URL where the finding was observed
+  constructor(
+    host: string,
+    template: string,
+    status: disclosureStatus,
+    ticketURL: string,
+    matchedAt: string
+  ) {
+    this.id = uuidv4();
+    this.hosts = new Array<string>(host);
+    this.timestamp = new Date().toISOString();
+    this.template = template;
+    this.status = status;
+    this.ticketURL = ticketURL;
+    this.matchedAt = matchedAt;
+    this.history = new Array<disclosureHistory>();
+  }
+}
+
+/**
+ * Rehydrated finding from reading multiple sources, contains finding data formatted for our needs, and related disclosures
+ */
 class finding {
   id: string;
   extractedResults: string;
@@ -38,6 +93,7 @@ class finding {
   reference: string[];
   //If true, the finding is open in the UI for detail view
   expanded: boolean;
+  disclosure: disclosure | undefined; //disclosure can be missing
 
   /**
    * Convert a nested finding into an equivalent (flat) finding
@@ -65,7 +121,8 @@ class finding {
     this.tags = finding.info.tags;
     this.reference = finding.info.reference;
     this.expanded = false;
+    this.disclosure = undefined;
   }
 }
 
-export { severity, finding };
+export { severity, finding, disclosure, disclosureStatus };

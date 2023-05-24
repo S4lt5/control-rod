@@ -33,6 +33,7 @@ export const findingsRouter = createTRPCRouter({
           template: '',
           timestamp: '',
           expanded: false,
+          disclosure: undefined,
         },
       ];
     }
