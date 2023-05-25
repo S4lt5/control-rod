@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import { disclosure, disclosureStatus, severity } from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 
-export const disclosureRouter = createTRPCRouter({
+export const disclosuresRouter = createTRPCRouter({
   getDisclosures: protectedProcedure.query(async (): Promise<disclosure[]> => {
     try {
       const dataDirectory = path.join(process.cwd(), 'data');
@@ -19,13 +19,13 @@ export const disclosureRouter = createTRPCRouter({
     } catch {
       return [
         new disclosure(
+          'some finding',
           'some host',
           'not-a-real-template',
           disclosureStatus.disclosed,
           'https://www.google.com',
           'https://www.google.com/vulnhere',
           {
-            name: '',
             template: '',
             description: '',
             severity: severity.info,

@@ -27,10 +27,10 @@ export interface nestedFinding {
 
 enum disclosureStatus {
   disclosed,
+  regression,
+  uncertain, // the finding MIGHT be exploitable, but it has not been demonstrated
   remediated,
   invalid, // the finding was proven to not be exploitable or otherwise a false positive
-  uncertain, // the finding MIGHT be exploitable, but it has not been demonstrated
-  regression,
 }
 /**
  * A disclosure history is a list of previous status and the time they were recorded.
@@ -50,7 +50,6 @@ class disclosureHistory {
  * Findings may change, templates may update, but we keep the original information here to reduce confusion or incident.
  */
 class disclsoureFindingInfo {
-  name: string;
   template: string;
   description: string;
   severity: severity;
@@ -58,7 +57,6 @@ class disclsoureFindingInfo {
 
   constructor(f: finding) {
     this.description = f.description;
-    this.name = f.name;
     this.references = f.reference;
     this.severity = f.severity;
     this.template = f.template;
@@ -71,6 +69,7 @@ class disclsoureFindingInfo {
 
 class disclosure {
   id: string;
+  name: string; //the name of the finding
   hosts: string[];
   template: string;
   timestamp: string;
@@ -79,8 +78,10 @@ class disclosure {
   history: disclosureHistory[];
   matchedAt: string; //the specific URL where the finding was observed
   findingInfo: disclsoureFindingInfo;
+  expanded: boolean; // in UI, if it is the currently expanded element
 
   constructor(
+    name: string,
     host: string,
     template: string,
     status: disclosureStatus,
@@ -89,6 +90,7 @@ class disclosure {
     f: disclsoureFindingInfo
   ) {
     this.id = uuidv4();
+    this.name = name;
     this.hosts = new Array<string>(host);
     this.timestamp = new Date().toISOString();
     this.template = template;
@@ -97,6 +99,7 @@ class disclosure {
     this.matchedAt = matchedAt;
     this.history = new Array<disclosureHistory>();
     this.findingInfo = f;
+    this.expanded = false;
   }
 }
 
