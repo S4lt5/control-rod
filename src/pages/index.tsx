@@ -4,7 +4,11 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { severity, type finding } from '~/shared/finding';
+import {
+  severity,
+  type finding,
+  createFindingFilterFn,
+} from '~/shared/finding';
 import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
@@ -14,23 +18,6 @@ import { DisclosureStatusTag } from '~/components/disclosure-status';
 import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { ScanInformationBlock } from '~/components/findings/scan-info-block';
-function createFilterFn<T extends finding>(query: string) {
-  const filterFn = (f: finding) => {
-    const lowerQuery = query.toLowerCase();
-    return (
-      //inexplicably, one of the findings had no description, so check for all params before doing string compares
-      (f.name && f.name.toLowerCase().includes(lowerQuery)) ||
-      (f.host && f.host.includes(lowerQuery)) ||
-      (f.severity && severity[f.severity].toLowerCase().includes(lowerQuery)) ||
-      (f.description && f.description.toLowerCase().includes(lowerQuery)) ||
-      (f.template && f.template.includes(lowerQuery)) ||
-      (f.disclosure?.status.toString().toLowerCase() ?? 'not started').includes(
-        lowerQuery
-      )
-    );
-  };
-  return filterFn;
-}
 
 const Home: NextPage = () => {
   const [expanded, setExpanded] = useState('');
@@ -64,7 +51,7 @@ const Home: NextPage = () => {
               {findings &&
                 findings
                   .sort(createCompareFn('severity', 'desc'))
-                  .filter(createFilterFn(search))
+                  .filter(createFindingFilterFn(search))
                   .map((f) => (
                     <>
                       <tr
@@ -124,19 +111,21 @@ const Home: NextPage = () => {
                                   {f.disclosure?.status ?? 'Not Started'}
                                 </li>
                                 <li>
-                                  <button
-                                    className="my-2 inline-flex  items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-300"
-                                    onClick={() => {
-                                      setExpanded('');
-                                    }}
-                                  >
-                                    <img
-                                      alt="create new disclosure"
-                                      className="mr-2 h-8 w-8 fill-white"
-                                      src="new-document.svg"
-                                    ></img>{' '}
-                                    <span>Create new disclosure</span>
-                                  </button>
+                                  <Link href="/disclosures/create">
+                                    <button
+                                      className="my-2 inline-flex  items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-300"
+                                      onClick={() => {
+                                        setExpanded('');
+                                      }}
+                                    >
+                                      <img
+                                        alt="create new disclosure"
+                                        className="mr-2 h-8 w-8 fill-white"
+                                        src="new-document.svg"
+                                      ></img>{' '}
+                                      <span>Create new disclosure</span>
+                                    </button>
+                                  </Link>
                                 </li>
                                 <li>Ticket Status: Unknown</li>
                               </ul>

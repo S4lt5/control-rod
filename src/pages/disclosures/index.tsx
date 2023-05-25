@@ -3,16 +3,13 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { disclosure } from '~/shared/finding';
+import { type disclosure, severity } from '~/shared/finding';
 import moment from 'moment';
 import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
-import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
-import { ScanInformationBlock } from '~/components/findings/scan-info-block';
 function createFilterFn<T extends disclosure>(query: string) {
   const filterFn = (d: disclosure) => {
     const lowerQuery = query.toLowerCase();
@@ -174,14 +171,13 @@ const Home: NextPage = () => {
             <div className="flex flex-col items-center gap-2">
               <div className="flex flex-col items-center justify-center gap-4">
                 <p className="text-center text-2xl text-white">
-                  No disclosures found, create one from the findings page,
+                  No disclosures found. Create one from the findings page,
                   <Link
                     className="ml-1 text-slate-400  hover:underline"
                     href="/disclosures/new"
                   >
-                    or click here to create from scratch!
+                    or click here to create from scratch.
                   </Link>
-                  !
                 </p>
               </div>
             </div>

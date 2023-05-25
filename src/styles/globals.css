@@ -9,3 +9,14 @@
     background-color: rgb(255 255 255 / 0.05);
   }
 }
+/* When an input with focus class is selected, show the next sibling '.show_on_focus'
+   element
+   http://jsfiddle.net/69zbhogL/
+*/
+input.focus:focus ~ .show_on_focus {
+  display: block;
+}
+
+.show_on_focus {
+  display: none;
+}

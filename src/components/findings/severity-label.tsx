@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { severity } from '~/shared/finding';
 
 type props = {
-  sval: severity;
+  sval: severity | undefined;
 };
 export const SeverityLabel: React.FC<props> = ({ sval }) => {
   return (
@@ -32,7 +32,8 @@ export const SeverityLabel: React.FC<props> = ({ sval }) => {
                             }
                          `}
     >
-      {severity[sval]}
+      {sval && severity[sval]}
+      {!sval && 'ERROR!'}
     </span>
   );
 };

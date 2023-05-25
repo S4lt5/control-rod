@@ -77,7 +77,7 @@ class disclosure {
   ticketURL: string;
   history: disclosureHistory[];
   matchedAt: string; //the specific URL where the finding was observed
-  findingInfo: disclsoureFindingInfo;
+  findingInfo: disclsoureFindingInfo | null;
   expanded: boolean; // in UI, if it is the currently expanded element
 
   constructor(
@@ -87,7 +87,7 @@ class disclosure {
     status: disclosureStatus,
     ticketURL: string,
     matchedAt: string,
-    f: disclsoureFindingInfo
+    f: disclsoureFindingInfo | null
   ) {
     this.id = uuidv4();
     this.name = name;
@@ -151,5 +151,34 @@ class finding {
     this.disclosure = undefined;
   }
 }
+/**
+ * Filter function for client-side UI finding search
+ * @param query
+ * @returns
+ */
+function createFindingFilterFn<T extends finding>(query: string) {
+  const filterFn = (f: finding) => {
+    const lowerQuery = query.toLowerCase();
+    return (
+      //inexplicably, one of the findings had no description, so check for all params before doing string compares
+      (f.name && f.name.toLowerCase().includes(lowerQuery)) ||
+      (f.host && f.host.includes(lowerQuery)) ||
+      (f.severity && severity[f.severity].toLowerCase().includes(lowerQuery)) ||
+      (f.description && f.description.toLowerCase().includes(lowerQuery)) ||
+      (f.template && f.template.includes(lowerQuery)) ||
+      (f.disclosure?.status.toString().toLowerCase() ?? 'not started').includes(
+        lowerQuery
+      )
+    );
+  };
+  return filterFn;
+}
 
-export { severity, finding, disclosure, disclosureStatus };
+export {
+  severity,
+  finding,
+  disclosure,
+  disclosureStatus,
+  disclsoureFindingInfo,
+  createFindingFilterFn,
+};

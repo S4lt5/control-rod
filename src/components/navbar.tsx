@@ -1,8 +1,10 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
+import { useRouter } from 'next/router';
 
 export const NavBar = () => {
+  const router = useRouter();
   const { data: sessionData } = useSession();
   const [search, setSearch] = useAtom(atomSearch);
 
@@ -20,13 +22,17 @@ export const NavBar = () => {
           </div>
 
           <div className="flex flex-1 justify-center text-white md:w-full md:justify-start ">
-            <span className="relative w-full">
+            <span
+              className={`relative w-full  ${
+                router.pathname == '/disclosures/new' ? 'hidden' : ''
+              }`}
+            >
               <input
                 aria-label="search"
                 type="search"
                 id="search"
                 placeholder="Search"
-                className="w-full appearance-none rounded border border-transparent bg-gray-900 px-2 py-3 pl-10 leading-normal text-white transition focus:border-gray-400 focus:outline-none"
+                className={` w-full appearance-none rounded border border-transparent bg-gray-900 px-2 py-3 pl-10 leading-normal text-white transition focus:border-gray-400 focus:outline-none`}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
