@@ -174,12 +174,12 @@ const Home: NextPage = () => {
             <div className="flex flex-col items-center gap-2">
               <div className="flex flex-col items-center justify-center gap-4">
                 <p className="text-center text-2xl text-white">
-                  No disclosures found, create one from the
+                  No disclosures found, create one from the findings page,
                   <Link
-                    className="ml-2 text-slate-400  hover:underline"
-                    href="/"
+                    className="ml-1 text-slate-400  hover:underline"
+                    href="/disclosures/new"
                   >
-                    findings page
+                    or click here to create from scratch!
                   </Link>
                   !
                 </p>
