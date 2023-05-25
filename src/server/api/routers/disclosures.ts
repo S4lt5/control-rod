@@ -1,6 +1,6 @@
 import path from 'path';
 import { promises as fs } from 'fs';
-import { disclosure, disclosureStatus } from '~/shared/finding';
+import { disclosure, disclosureStatus, severity } from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 
 export const disclosureRouter = createTRPCRouter({
@@ -23,7 +23,14 @@ export const disclosureRouter = createTRPCRouter({
           'not-a-real-template',
           disclosureStatus.disclosed,
           'https://www.google.com',
-          'https://www.google.com/vulnhere'
+          'https://www.google.com/vulnhere',
+          {
+            name: '',
+            template: '',
+            description: '',
+            severity: severity.info,
+            references: [],
+          }
         ),
       ];
     }

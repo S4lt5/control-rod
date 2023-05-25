@@ -46,6 +46,26 @@ class disclosureHistory {
 }
 
 /**
+ * a disclosure contains snapshotted information regarding the finding, at the time of disclosure.
+ * Findings may change, templates may update, but we keep the original information here to reduce confusion or incident.
+ */
+class disclsoureFindingInfo {
+  name: string;
+  template: string;
+  description: string;
+  severity: severity;
+  references: string[];
+
+  constructor(f: finding) {
+    this.description = f.description;
+    this.name = f.name;
+    this.references = f.reference;
+    this.severity = f.severity;
+    this.template = f.template;
+  }
+}
+
+/**
  * A disclosure is a notification or ticket created to deal with a particular finding
  */
 
@@ -58,12 +78,15 @@ class disclosure {
   ticketURL: string;
   history: disclosureHistory[];
   matchedAt: string; //the specific URL where the finding was observed
+  findingInfo: disclsoureFindingInfo;
+
   constructor(
     host: string,
     template: string,
     status: disclosureStatus,
     ticketURL: string,
-    matchedAt: string
+    matchedAt: string,
+    f: disclsoureFindingInfo
   ) {
     this.id = uuidv4();
     this.hosts = new Array<string>(host);
@@ -73,6 +96,7 @@ class disclosure {
     this.ticketURL = ticketURL;
     this.matchedAt = matchedAt;
     this.history = new Array<disclosureHistory>();
+    this.findingInfo = f;
   }
 }
 

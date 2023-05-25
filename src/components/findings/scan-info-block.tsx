@@ -6,7 +6,7 @@ type props = {
 };
 export const ScanInformationBlock: React.FC<props> = ({ finding }) => {
   return (
-    <ul className="flex grow flex-col justify-start">
+    <ul className="flex grow flex-col justify-start ">
       <li> Scan Information: </li>
       <li>
         Host:
