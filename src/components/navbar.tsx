@@ -13,7 +13,7 @@ export const NavBar = () => {
         className="fixed top-0 z-10 mt-0 h-auto w-full bg-gray-800 px-1 pb-1 pt-2 md:pt-1"
       >
         <div className="flex flex-wrap items-center">
-          <div className=" text-white md:w-48 ">
+          <div className=" hidden text-white sm:block md:w-48">
             <a href="#" aria-label="Home">
               <img src="/logo2.png" className="m-y-0 h-14 pl-8" />
             </a>
