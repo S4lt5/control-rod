@@ -7,7 +7,6 @@ import {
   createFindingFilterFn,
   disclosure,
   disclosureStatus,
-  disclsoureFindingInfo,
   finding,
 } from '~/shared/finding';
 import { createCompareFn } from '~/shared/helpers';
@@ -74,6 +73,7 @@ const NewDisclosure: NextPage = () => {
                     <tbody>
                       {findings &&
                         findings
+                          .filter((f) => !f.disclosure)
                           .sort(createCompareFn('severity', 'desc'))
                           .filter(createFindingFilterFn(findingSearch))
                           .map((f) => (
@@ -86,12 +86,13 @@ const NewDisclosure: NextPage = () => {
                                   onClick={(e) => {
                                     const d: disclosure = new disclosure(
                                       f.name,
-                                      f.host,
+                                      new Array<string>(f.host),
                                       f.template,
                                       disclosureStatus.disclosed,
                                       '',
-                                      f.matchedAt,
-                                      new disclsoureFindingInfo(f)
+                                      f.description,
+                                      f.severity,
+                                      f.reference
                                     );
                                     setNewDisclosure(d);
                                     setFindingSearch(d.name);

@@ -47,24 +47,6 @@ class disclosureHistory {
 }
 
 /**
- * a disclosure contains snapshotted information regarding the finding, at the time of disclosure.
- * Findings may change, templates may update, but we keep the original information here to reduce confusion or incident.
- */
-class disclsoureFindingInfo {
-  template: string;
-  description: string;
-  severity: severity;
-  references: string[];
-
-  constructor(f: finding) {
-    this.description = f.description;
-    this.references = f.reference;
-    this.severity = f.severity;
-    this.template = f.template;
-  }
-}
-
-/**
  * A disclosure is a notification or ticket created to deal with a particular finding
  */
 
@@ -77,29 +59,33 @@ class disclosure {
   status: disclosureStatus;
   ticketURL: string;
   history: disclosureHistory[];
-  matchedAt: string; //the specific URL where the finding was observed
-  findingInfo: disclsoureFindingInfo | null;
   expanded: boolean; // in UI, if it is the currently expanded element
+  description: string;
+  severity: severity;
+  references: string[];
 
   constructor(
     name: string,
-    host: string,
+    hosts: string[],
     template: string,
     status: disclosureStatus,
     ticketURL: string,
-    matchedAt: string,
-    f: disclsoureFindingInfo | null
+    description: string,
+    severity: severity,
+    references: string[]
   ) {
     this.id = uuidv4();
     this.name = name;
-    this.hosts = new Array<string>(host);
+
+    this.hosts = hosts;
     this.timestamp = new Date().toISOString();
     this.template = template;
     this.status = status;
     this.ticketURL = ticketURL;
-    this.matchedAt = matchedAt;
     this.history = new Array<disclosureHistory>();
-    this.findingInfo = f;
+    this.description = description;
+    this.severity = severity;
+    this.references = references;
     this.expanded = false;
   }
 }
@@ -180,6 +166,6 @@ export {
   finding,
   disclosure,
   disclosureStatus,
-  disclsoureFindingInfo,
+  disclosureHistory,
   createFindingFilterFn,
 };
