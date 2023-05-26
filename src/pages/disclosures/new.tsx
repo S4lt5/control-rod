@@ -1,23 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
-import { NextPage } from 'next';
+import { type NextPage } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
-import { SyntheticEvent, useState } from 'react';
+import { type SyntheticEvent, useState } from 'react';
 import {
   createFindingFilterFn,
   disclosure,
   disclosureStatus,
-  finding,
+  type finding,
 } from '~/shared/finding';
 import { createCompareFn } from '~/shared/helpers';
 import { api } from '~/utils/api';
+import { useRouter } from 'next/router';
 
 const NewDisclosure: NextPage = () => {
+  const router = useRouter();
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
+  const { data: disclosures, status: disclosureQueryStatus } =
+    api.disclosures.getDisclosures.useQuery();
   const addDisclosure = api.disclosures.newDisclosure.useMutation();
   const [findingSearch, setFindingSearch] = useState(''); //used to filter the dropdown findings list
-  const [hostFilter, getHostFilter] = useState(''); // host filter is the finding-filtered host list
   const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
 
   function selectHost(e: SyntheticEvent, f: finding): void {
@@ -73,10 +75,17 @@ const NewDisclosure: NextPage = () => {
                   <table className="w-full table-fixed">
                     <tbody>
                       {findings &&
+                        disclosures &&
                         findings
-                          .filter((f) => !f.disclosure)
-                          .sort(createCompareFn('severity', 'desc'))
+                          .filter((f: finding) => {
+                            return !disclosures.some(
+                              (d) =>
+                                d.name == f.name &&
+                                d.hosts.some((h) => h == f.host)
+                            );
+                          })
                           .filter(createFindingFilterFn(findingSearch))
+                          .sort(createCompareFn('severity', 'desc'))
                           .map((f) => (
                             <tr
                               className=" border-b-2 border-gray-900 bg-slate-700 hover:bg-white/20"
@@ -172,7 +181,14 @@ const NewDisclosure: NextPage = () => {
                 <table className="w-full table-fixed">
                   <tbody>
                     {findings &&
+                      disclosures &&
                       findings
+                        .filter(
+                          (f) =>
+                            !disclosures.some((d) =>
+                              d.hosts.some((dh) => dh == f.host)
+                            )
+                        )
                         .filter((f) => f.name == newDisclosure.name)
 
                         .map((f) => (
@@ -213,7 +229,8 @@ const NewDisclosure: NextPage = () => {
                   ? ''
                   : 'hidden'
               }   my-4 inline-flex items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-200`}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 if (!newDisclosure) {
                   throw new Error('foo');
                 }
@@ -230,7 +247,12 @@ const NewDisclosure: NextPage = () => {
                     console.log('oh noes');
                   })
                   .then(() => {
-                    console.log('hi');
+                    void router
+                      .push('/disclosures')
+                      .catch(() => {
+                        console.log("Couldn't navigate to disclosures.");
+                      })
+                      .then();
                   });
               }}
             >
