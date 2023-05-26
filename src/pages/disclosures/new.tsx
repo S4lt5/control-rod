@@ -1,7 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import {
   createFindingFilterFn,
   disclosure,
@@ -15,8 +16,24 @@ import { api } from '~/utils/api';
 const NewDisclosure: NextPage = () => {
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
-  const [findingSearch, setFindingSearch] = useState('');
-  const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null);
+  const [findingSearch, setFindingSearch] = useState(''); //used to filter the dropdown findings list
+  const [hostFilter, getHostFilter] = useState(''); // host filter is the finding-filtered host list
+  const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
+
+  function selectHost(e: SyntheticEvent, f: finding): void {
+    if (newDisclosure) {
+      //if it exists, remove it
+      if (newDisclosure.hosts.includes(f.host)) {
+        newDisclosure.hosts = newDisclosure.hosts.filter((h) => h != f.host);
+      } else {
+        // or add it
+        newDisclosure.hosts.push(f.host);
+      }
+
+      setNewDisclosure({ ...newDisclosure });
+    }
+    e.preventDefault();
+  }
   return (
     <>
       <Head>
@@ -28,8 +45,13 @@ const NewDisclosure: NextPage = () => {
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
         <div className="flex h-full w-full flex-col text-white">
           <form className="flex-auto">
-            <p className="prose prose-xl text-white ">Create New Disclosure</p>
+            <p className="prose prose-xl my-4 text-white ">
+              Create New Disclosure
+            </p>
             <div className="mb-6">
+              <p className={`my-2 ${newDisclosure ? 'hidden' : ''}`}>
+                ➡ Step 1: Choose a source finding.
+              </p>
               <span className="relative w-full">
                 <input
                   aria-label="search"
@@ -43,7 +65,6 @@ const NewDisclosure: NextPage = () => {
                   value={findingSearch}
                   onChange={(e) => setFindingSearch(e.target.value)}
                 />
-
                 <div
                   className={`min-h-12 m-x-10 max-h-36 w-full overflow-y-scroll bg-slate-400  ${
                     newDisclosure ? 'hidden' : ''
@@ -86,7 +107,6 @@ const NewDisclosure: NextPage = () => {
                     </tbody>
                   </table>
                 </div>
-
                 <div
                   className="search-icon absolute"
                   style={{ top: '0.1rem', left: '.8rem' }}
@@ -106,23 +126,23 @@ const NewDisclosure: NextPage = () => {
                   >
                     <line
                       stroke="#D06079"
-                      stroke-width="15"
+                      strokeWidth={15}
                       stroke-linecap="round"
-                      stroke-miterlimit="10"
-                      x1="10.0"
-                      y1="10.0"
-                      x2="90.0"
-                      y2="90.0"
+                      strokeMiterlimit={10}
+                      x1={10.0}
+                      y1={10.0}
+                      x2={90.0}
+                      y2={90.0}
                     />
                     <line
                       stroke="#D06079"
-                      stroke-width="15"
+                      strokeWidth={15}
                       stroke-linecap="round"
-                      stroke-miterlimit="10"
-                      x1="10"
-                      y1="90"
-                      x2="90"
-                      y2="10"
+                      strokeMiterlimit={10}
+                      x1={10}
+                      y1={90}
+                      x2={90}
+                      y2={10}
                     />
                   </svg>
 
@@ -138,11 +158,59 @@ const NewDisclosure: NextPage = () => {
                 </div>
               </span>{' '}
             </div>
-            aa{newDisclosure && newDisclosure.name}bb cc
-            {newDisclosure && newDisclosure.hosts}dd
+            <p className={`my-2 ${!newDisclosure ? 'hidden' : ''}`}>
+              ➡ Step 2: Choose related hosts, and submit.
+            </p>
+            {newDisclosure && newDisclosure.hosts && (
+              <div
+                className={`min-h-12 m-x-10 max-h-64 w-full overflow-y-scroll bg-slate-400  ${
+                  newDisclosure ? '' : 'hidden'
+                }`}
+              >
+                <table className="w-full table-fixed">
+                  <tbody>
+                    {findings &&
+                      findings
+                        .filter((f) => f.name == newDisclosure.name)
+
+                        .map((f) => (
+                          <tr
+                            className=" border-b-2 border-gray-900 bg-slate-700 hover:bg-white/20"
+                            key={f.id}
+                            onClick={(e) => {
+                              selectHost(e, f);
+                            }}
+                          >
+                            <td className="shrink">
+                              <img
+                                alt="select/deselect"
+                                className="h-6 w-6"
+                                src={
+                                  newDisclosure.hosts &&
+                                  newDisclosure.hosts.includes(f.host)
+                                    ? '/cb-checked.svg'
+                                    : '/cb-empty.svg'
+                                }
+                              />
+                            </td>
+                            <td>{f.name}</td>
+                            <td>{f.host}</td>
+                          </tr>
+                        ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
+              className={`${
+                newDisclosure &&
+                newDisclosure.hosts &&
+                newDisclosure.hosts.length > 0
+                  ? ''
+                  : 'hidden'
+              }   my-4 inline-flex items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-200`}
             >
               Submit
             </button>

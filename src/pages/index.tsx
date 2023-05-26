@@ -111,7 +111,7 @@ const Home: NextPage = () => {
                                   {f.disclosure?.status ?? 'Not Started'}
                                 </li>
                                 <li>
-                                  <Link href="/disclosures/create">
+                                  <Link href="/disclosures/new">
                                     <button
                                       className="my-2 inline-flex  items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-300"
                                       onClick={() => {
