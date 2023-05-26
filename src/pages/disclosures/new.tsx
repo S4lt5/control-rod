@@ -16,9 +16,7 @@ const NewDisclosure: NextPage = () => {
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
   const [findingSearch, setFindingSearch] = useState('');
-  const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(
-    new disclosure('', '', '', disclosureStatus.disclosed, '', '', null)
-  );
+  const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null);
   return (
     <>
       <Head>
@@ -30,21 +28,26 @@ const NewDisclosure: NextPage = () => {
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
         <div className="flex h-full w-full flex-col text-white">
           <form className="flex-auto">
-            <p className="prose prose-xl ">Create New Disclosure</p>
+            <p className="prose prose-xl text-white ">Create New Disclosure</p>
             <div className="mb-6">
               <span className="relative w-full">
                 <input
                   aria-label="search"
                   type="search"
                   id="search"
-                  placeholder="Search findings"
-                  className="w-full appearance-none rounded border border-transparent bg-gray-900 px-2 py-3 pl-10 leading-normal text-white transition focus:border-gray-400 focus:outline-none"
+                  disabled={newDisclosure ? true : false}
+                  placeholder={newDisclosure ? '' : 'Search findings'}
+                  className={`w-full appearance-none rounded border ${
+                    newDisclosure ? 'border-white' : 'border-transparent'
+                  } bg-gray-900 px-2 py-3 pl-10 leading-normal text-white transition focus:border-gray-400 focus:outline-none`}
                   value={findingSearch}
                   onChange={(e) => setFindingSearch(e.target.value)}
                 />
 
                 <div
-                  className={`min-h-12 m-x-10 max-h-36 w-full overflow-y-scroll bg-slate-400 `}
+                  className={`min-h-12 m-x-10 max-h-36 w-full overflow-y-scroll bg-slate-400  ${
+                    newDisclosure ? 'hidden' : ''
+                  }`}
                 >
                   <table className="w-full table-fixed">
                     <tbody>
@@ -59,7 +62,7 @@ const NewDisclosure: NextPage = () => {
                             >
                               <td>
                                 <button
-                                  onClick={() => {
+                                  onClick={(e) => {
                                     const d: disclosure = new disclosure(
                                       f.name,
                                       f.host,
@@ -70,6 +73,8 @@ const NewDisclosure: NextPage = () => {
                                       new disclsoureFindingInfo(f)
                                     );
                                     setNewDisclosure(d);
+                                    setFindingSearch(d.name);
+                                    e.preventDefault(); // don't submit the form because we clicked here
                                   }}
                                 >
                                   {f.name}
@@ -81,12 +86,50 @@ const NewDisclosure: NextPage = () => {
                     </tbody>
                   </table>
                 </div>
+
                 <div
                   className="search-icon absolute"
                   style={{ top: '0.1rem', left: '.8rem' }}
                 >
                   <svg
-                    className="pointer-events-none h-4 w-4 fill-current text-white"
+                    className={`${
+                      !newDisclosure ? 'hidden' : ''
+                    } h-6 w-6 hover:cursor-pointer`}
+                    onClick={(e) => {
+                      setNewDisclosure(null); //remove currently selected disclosure
+                      setFindingSearch('');
+                      e.preventDefault();
+                    }}
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 130.2 130.2"
+                  >
+                    <line
+                      stroke="#D06079"
+                      stroke-width="15"
+                      stroke-linecap="round"
+                      stroke-miterlimit="10"
+                      x1="10.0"
+                      y1="10.0"
+                      x2="90.0"
+                      y2="90.0"
+                    />
+                    <line
+                      stroke="#D06079"
+                      stroke-width="15"
+                      stroke-linecap="round"
+                      stroke-miterlimit="10"
+                      x1="10"
+                      y1="90"
+                      x2="90"
+                      y2="10"
+                    />
+                  </svg>
+
+                  <svg
+                    className={`pointer-events-none h-4 w-4 fill-current text-white ${
+                      newDisclosure ? 'hidden' : ''
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                   >

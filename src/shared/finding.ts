@@ -26,6 +26,7 @@ export interface nestedFinding {
 }
 
 enum disclosureStatus {
+  started,
   disclosed,
   regression,
   uncertain, // the finding MIGHT be exploitable, but it has not been demonstrated
