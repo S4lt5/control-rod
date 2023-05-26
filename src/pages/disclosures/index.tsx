@@ -3,7 +3,7 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
-import { type disclosure, severity } from '~/shared/finding';
+import { type disclosure, severity, disclosureStatus } from '~/shared/finding';
 import moment from 'moment';
 import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
@@ -13,8 +13,13 @@ import { SeverityLabel } from '~/components/findings/severity-label';
 function createFilterFn<T extends disclosure>(query: string) {
   const filterFn = (d: disclosure) => {
     const lowerQuery = query.toLowerCase();
-    return (d.status.toString().toLowerCase() ?? 'not started').includes(
-      lowerQuery
+    return (
+      d.name.toLowerCase().includes(lowerQuery) ||
+      d.description.toLowerCase().includes(lowerQuery) ||
+      d.template.toLowerCase().includes(lowerQuery) ||
+      severity[d.severity].toLowerCase().includes(lowerQuery) ||
+      d.hosts.some((s) => s.toLowerCase().includes(lowerQuery)) ||
+      disclosureStatus[d.status].toLowerCase().includes(lowerQuery)
     );
   };
   return filterFn;
@@ -58,14 +63,14 @@ const Home: NextPage = () => {
                         onClick={() => {
                           setExpanded(d.id);
                         }}
-                        className="every_two_rows hover:cursor-pointer hover:bg-white/20"
+                        className="every_two_rows  hover:cursor-pointer hover:bg-white/20"
                         key={d.id}
                       >
                         <td className="border border-y-0 border-l-0 border-gray-700  ">
                           {d.name}
                         </td>
                         <td className="border  border-y-0 border-l-0 border-gray-700  px-1 text-center  ">
-                          {d.status}
+                          {disclosureStatus[d.status]}
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           <ul>
@@ -73,10 +78,8 @@ const Home: NextPage = () => {
                               d.hosts.map((h) => <li key={h}>{h}</li>)}
                           </ul>
                         </td>
-                        <td className="border border-y-0 border-l-0 border-gray-700 px-1">
-                          <SeverityLabel
-                            sval={d.findingInfo?.severity}
-                          ></SeverityLabel>
+                        <td className="h-12 border border-y-0 border-l-0 border-gray-700 px-1">
+                          <SeverityLabel sval={d.severity}></SeverityLabel>
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           {moment(d.timestamp).format('MM/DD/YY')}
@@ -99,20 +102,18 @@ const Home: NextPage = () => {
                               </button>
                             </div>
                             <div className=" flex grow basis-1/2 flex-col justify-start py-4">
-                              <SeverityLabel
-                                sval={d.findingInfo?.severity}
-                              ></SeverityLabel>
+                              <SeverityLabel sval={d.severity}></SeverityLabel>
                               <p className=" my-2 justify-start  border-b-2 border-slate-400 text-xl">
                                 {d.name}
                               </p>
 
-                              <p>{d.findingInfo?.description}</p>
+                              <p>{d.description}</p>
                               <div className="my-4">
                                 <p>References</p>
                                 <ul className="ml-10">
                                   {d &&
-                                    d.findingInfo?.references &&
-                                    d.findingInfo?.references.map((ref) => (
+                                    d.references &&
+                                    d.references.map((ref) => (
                                       <li className=" list-disc" key={ref}>
                                         <a
                                           className="text-slate-400  hover:underline"
@@ -171,17 +172,26 @@ const Home: NextPage = () => {
             <div className="flex flex-col items-center gap-2">
               <div className="flex flex-col items-center justify-center gap-4">
                 <p className="text-center text-2xl text-white">
-                  No disclosures found. Create one from the findings page,
-                  <Link
-                    className="ml-1 text-slate-400  hover:underline"
-                    href="/disclosures/new"
-                  >
-                    or click here to create from scratch.
-                  </Link>
+                  No disclosures found.
                 </p>
               </div>
             </div>
           )}
+        {queryStatus && queryStatus == 'success' && (
+          <Link
+            className="ml-1 text-slate-400  hover:underline"
+            href="/disclosures/new"
+          >
+            <button
+              className="align-center m-2 justify-center rounded bg-indigo-400 p-2 text-white hover:bg-indigo-300"
+              onClick={() => {
+                setExpanded('');
+              }}
+            >
+              Create New Disclosure
+            </button>
+          </Link>
+        )}
       </div>
     </>
   );

@@ -15,6 +15,7 @@ import { api } from '~/utils/api';
 const NewDisclosure: NextPage = () => {
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
+  const addDisclosure = api.disclosures.newDisclosure.useMutation();
   const [findingSearch, setFindingSearch] = useState(''); //used to filter the dropdown findings list
   const [hostFilter, getHostFilter] = useState(''); // host filter is the finding-filtered host list
   const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
@@ -212,6 +213,26 @@ const NewDisclosure: NextPage = () => {
                   ? ''
                   : 'hidden'
               }   my-4 inline-flex items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-200`}
+              onClick={() => {
+                if (!newDisclosure) {
+                  throw new Error('foo');
+                }
+                void addDisclosure
+                  .mutateAsync({
+                    name: newDisclosure.name,
+                    description: newDisclosure.description,
+                    hosts: newDisclosure.hosts,
+                    severity: newDisclosure.severity,
+                    references: newDisclosure.references,
+                    template: newDisclosure.template,
+                  })
+                  .catch(() => {
+                    console.log('oh noes');
+                  })
+                  .then(() => {
+                    console.log('hi');
+                  });
+              }}
             >
               Submit
             </button>
