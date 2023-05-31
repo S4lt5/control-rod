@@ -43,4 +43,18 @@ export const disclosuresRouter = createTRPCRouter({
   getDisclosures: protectedProcedure.query(async (): Promise<disclosure[]> => {
     return await readDisclosuresFromFS();
   }),
+
+  getDisclosureTemplate: protectedProcedure.query(async () => {
+    //read the disclosure template
+
+    //https://stackoverflow.com/questions/73715285/exceljs-download-xlsx-file-with-trpc-router
+    //make changes
+
+    //save to temp location
+
+    //stream result back as b64
+
+    //delete temp file
+    return true;
+  }),
 });
