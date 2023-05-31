@@ -9,8 +9,11 @@ import {
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  readDisclosuresFromFS,
+  writeDisclosureToFS,
+} from '~/shared/backend_file';
 
-const dataDirectory = path.join(process.cwd(), 'data');
 export const disclosuresRouter = createTRPCRouter({
   newDisclosure: protectedProcedure
     .input(
@@ -35,49 +38,9 @@ export const disclosuresRouter = createTRPCRouter({
         input.severity,
         input.references
       );
-
-      try {
-        const data = await fs.readFile(
-          dataDirectory + '/disclosures.json',
-          'utf8'
-        );
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const disclosures: disclosure[] = JSON.parse(data);
-        disclosures.push(newDisclosure);
-        await fs.writeFile(
-          dataDirectory + '/disclosures.json',
-          JSON.stringify(disclosures)
-        );
-        return true;
-      } catch {
-        return false;
-      }
+      return await writeDisclosureToFS(newDisclosure);
     }),
   getDisclosures: protectedProcedure.query(async (): Promise<disclosure[]> => {
-    try {
-      const data = await fs.readFile(
-        dataDirectory + '/disclosures.json',
-        'utf8'
-      );
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const disclosures: disclosure[] = JSON.parse(data);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return disclosures;
-    } catch {
-      return [
-        new disclosure(
-          'some finding',
-          new Array<string>('some host'),
-          'not-a-real-template',
-          disclosureStatus.disclosed,
-          'https://www.google.com',
-          '',
-          severity.info,
-          new Array<string>()
-        ),
-      ];
-    }
+    return await readDisclosuresFromFS();
   }),
 });

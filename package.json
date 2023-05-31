@@ -19,6 +19,7 @@
     "@trpc/next": "^10.18.0",
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
+    "docx": "^8.0.4",
     "jotai": "^2.1.0",
     "moment": "^2.29.4",
     "next": "^13.4.1",

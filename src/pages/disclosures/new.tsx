@@ -85,7 +85,9 @@ const NewDisclosure: NextPage = () => {
                             );
                           })
                           .filter(createFindingFilterFn(findingSearch))
+                          .sort(createCompareFn('name', 'asc'))
                           .sort(createCompareFn('severity', 'desc'))
+
                           .map((f) => (
                             <tr
                               className=" border-b-2 border-gray-900 bg-slate-700 hover:bg-white/20"

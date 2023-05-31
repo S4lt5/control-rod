@@ -22,6 +22,7 @@ import { ScanInformationBlock } from '~/components/findings/scan-info-block';
 const Home: NextPage = () => {
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
+  const [hideDisclosed, setHideDisclosed] = useState(true);
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
 
@@ -35,6 +36,16 @@ const Home: NextPage = () => {
 
       <div className="container flex flex-col items-center justify-center gap-12 px-2 py-16 ">
         <div className="flex h-full w-full flex-col text-white">
+          <div className="w-full justify-start">
+            <input
+              type="checkbox"
+              checked={hideDisclosed}
+              onChange={() => setHideDisclosed(!hideDisclosed)}
+              className="m-2"
+            />
+            Hide disclosed findings
+          </div>
+
           <table className="table-auto">
             <thead className="borderb border-collapse border-gray-600 bg-white/10">
               <tr className="border border-gray-600">
@@ -51,6 +62,9 @@ const Home: NextPage = () => {
               {findings &&
                 findings
                   .sort(createCompareFn('severity', 'desc'))
+                  .filter((f: finding) => {
+                    return !hideDisclosed || f.disclosure == null;
+                  })
                   .filter(createFindingFilterFn(search))
                   .map((f) => (
                     <>
