@@ -128,7 +128,15 @@ const Home: NextPage = () => {
                                   {f.disclosure?.status ?? 'Not Started'}
                                 </li>
                                 <li>
-                                  <Link href="/disclosures/new">
+                                  <Link
+                                    href={{
+                                      pathname: '/disclosures/new',
+                                      query: {
+                                        nd_name: f.name,
+                                        nd_host: f.host,
+                                      },
+                                    }}
+                                  >
                                     <button
                                       className="my-2 inline-flex  items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-300"
                                       onClick={() => {

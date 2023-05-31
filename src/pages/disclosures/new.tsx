@@ -11,9 +11,12 @@ import {
 import { createCompareFn } from '~/shared/helpers';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
+import { matchesMiddleware } from 'next/dist/shared/lib/router/router';
 
 const NewDisclosure: NextPage = () => {
   const router = useRouter();
+  const { nd_name, nd_host } = router.query;
+
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery();
   const { data: disclosures, status: disclosureQueryStatus } =
@@ -21,7 +24,6 @@ const NewDisclosure: NextPage = () => {
   const addDisclosure = api.disclosures.newDisclosure.useMutation();
   const [findingSearch, setFindingSearch] = useState(''); //used to filter the dropdown findings list
   const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
-
   function selectHost(e: SyntheticEvent, f: finding): void {
     if (newDisclosure) {
       //if it exists, remove it
@@ -36,6 +38,28 @@ const NewDisclosure: NextPage = () => {
     }
     e.preventDefault();
   }
+
+  //if we have query params, create a new disclosure on page load
+  if (nd_name && nd_host && findings && !newDisclosure) {
+    const matchedFinding = findings.find(
+      (f) => f.name == nd_name && f.host == nd_host
+    );
+    if (matchedFinding) {
+      const d: disclosure = new disclosure(
+        matchedFinding.name,
+        new Array<string>(matchedFinding.host),
+        matchedFinding.template,
+        disclosureStatus.disclosed,
+        '',
+        matchedFinding.description,
+        matchedFinding.severity,
+        matchedFinding.reference
+      );
+      setNewDisclosure(d);
+      setFindingSearch(d.name);
+    }
+  }
+
   return (
     <>
       <Head>
