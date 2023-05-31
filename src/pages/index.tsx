@@ -124,8 +124,10 @@ const Home: NextPage = () => {
                               ></ScanInformationBlock>
                               <ul className="mt-4 flex grow flex-col">
                                 <li>
-                                  Disclosure Information:{' '}
-                                  {f.disclosure?.status ?? 'Not Started'}
+                                  Disclosure Status:{' '}
+                                  {f.disclosure
+                                    ? disclosureStatus[f.disclosure.status]
+                                    : 'Not Started'}
                                 </li>
                                 <li>
                                   <Link
