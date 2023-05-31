@@ -161,6 +161,15 @@ function createFindingFilterFn<T extends finding>(query: string) {
   return filterFn;
 }
 
+interface DisclosureStore {
+  getDisclosures(): Promise<disclosure[]>;
+  addDisclosure(newDisclosure: disclosure): Promise<boolean>;
+}
+
+interface FindingsStore {
+  getFindings(): Promise<finding[]>;
+}
+
 export {
   severity,
   finding,
@@ -168,4 +177,6 @@ export {
   disclosureStatus,
   disclosureHistory,
   createFindingFilterFn,
+  type FindingsStore,
+  type DisclosureStore,
 };

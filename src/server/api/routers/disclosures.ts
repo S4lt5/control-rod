@@ -9,11 +9,12 @@ import {
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  readDisclosuresFromFS,
-  writeDisclosureToFS,
-} from '~/shared/backend_file';
+import { FileFindingsStore, FileDisclosureStore } from '~/shared/backend_file';
 
+import JSZip from 'jszip';
+import Docxtemplater from 'docxtemplater';
+
+const disclosureStore = new FileDisclosureStore();
 export const disclosuresRouter = createTRPCRouter({
   newDisclosure: protectedProcedure
     .input(
@@ -38,23 +39,9 @@ export const disclosuresRouter = createTRPCRouter({
         input.severity,
         input.references
       );
-      return await writeDisclosureToFS(newDisclosure);
+      return await disclosureStore.addDisclosure(newDisclosure);
     }),
   getDisclosures: protectedProcedure.query(async (): Promise<disclosure[]> => {
-    return await readDisclosuresFromFS();
-  }),
-
-  getDisclosureTemplate: protectedProcedure.query(async () => {
-    //read the disclosure template
-
-    //https://stackoverflow.com/questions/73715285/exceljs-download-xlsx-file-with-trpc-router
-    //make changes
-
-    //save to temp location
-
-    //stream result back as b64
-
-    //delete temp file
-    return true;
+    return await disclosureStore.getDisclosures();
   }),
 });

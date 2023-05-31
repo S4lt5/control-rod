@@ -5,80 +5,88 @@ import {
   disclosure,
   disclosureStatus,
   finding,
-  nestedFinding,
+  type nestedFinding,
+  type DisclosureStore,
+  type FindingsStore,
   severity,
 } from './finding';
 
 const dataDirectory: string = path.join(process.cwd(), 'data');
 
-export const readDisclosuresFromFS = async (): Promise<disclosure[]> => {
-  try {
-    const data = await fs.readFile(dataDirectory + '/disclosures.json', 'utf8');
+export class FileFindingsStore implements FindingsStore {
+  async getFindings(): Promise<finding[]> {
+    try {
+      const dataDirectory = path.join(process.cwd(), 'data');
 
-    const disclosures: disclosure[] = JSON.parse(data);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return disclosures;
-  } catch {
-    return [
-      new disclosure(
-        'some finding',
-        new Array<string>('some host'),
-        'not-a-real-template',
-        disclosureStatus.disclosed,
-        'https://www.google.com',
-        '',
-        severity.info,
-        new Array<string>()
-      ),
-    ];
+      const data = await fs.readFile(dataDirectory + '/findings.json', 'utf8');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const nested_findings: nestedFinding[] = JSON.parse(data);
+      const flat_findings: finding[] = nested_findings.map(
+        (f) => new finding(f)
+      );
+      console.log(flat_findings);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return flat_findings;
+    } catch {
+      return [
+        {
+          id: 'an-id',
+          name: 'There was a problem reading the findings data.',
+          description: '',
+          reference: [],
+          severity: severity.info,
+          tags: [],
+          extractedResults: '',
+          host: '',
+          matchedAt: '',
+          template: '',
+          timestamp: '',
+          expanded: false,
+          disclosure: undefined,
+        },
+      ];
+    }
   }
-};
+}
 
-export const writeDisclosureToFS = async (
-  newDisclosure: disclosure
-): Promise<boolean> => {
-  try {
-    const disclosures = await readDisclosuresFromFS();
+export class FileDisclosureStore implements DisclosureStore {
+  async getDisclosures(): Promise<disclosure[]> {
+    try {
+      const data = await fs.readFile(
+        dataDirectory + '/disclosures.json',
+        'utf8'
+      );
 
-    disclosures.push(newDisclosure);
-    await fs.writeFile(
-      dataDirectory + '/disclosures.json',
-      JSON.stringify(disclosures)
-    );
-    return true;
-  } catch {
-    return false;
+      const disclosures: disclosure[] = JSON.parse(data);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return disclosures;
+    } catch {
+      return [
+        new disclosure(
+          'some finding',
+          new Array<string>('some host'),
+          'not-a-real-template',
+          disclosureStatus.disclosed,
+          'https://www.google.com',
+          '',
+          severity.info,
+          new Array<string>()
+        ),
+      ];
+    }
   }
-};
+  async addDisclosure(newDisclosure: disclosure): Promise<boolean> {
+    try {
+      const disclosures = await this.getDisclosures();
 
-export const readFindingsFromFS = async (): Promise<finding[]> => {
-  try {
-    const dataDirectory = path.join(process.cwd(), 'data');
-
-    const data = await fs.readFile(dataDirectory + '/findings.json', 'utf8');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const nested_findings: nestedFinding[] = JSON.parse(data);
-    const flat_findings: finding[] = nested_findings.map((f) => new finding(f));
-    console.log(flat_findings);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return flat_findings;
-  } catch {
-    return [
-      {
-        id: 'an-id',
-        name: 'There was a problem reading the findings data.',
-        description: '',
-        reference: [],
-        severity: severity.info,
-        tags: [],
-        extractedResults: '',
-        host: '',
-        matchedAt: '',
-        template: '',
-        timestamp: '',
-        expanded: false,
-        disclosure: undefined,
-      },
-    ];
+      disclosures.push(newDisclosure);
+      await fs.writeFile(
+        dataDirectory + '/disclosures.json',
+        JSON.stringify(disclosures)
+      );
+      return true;
+    } catch {
+      return false;
+    }
   }
-};
+}
