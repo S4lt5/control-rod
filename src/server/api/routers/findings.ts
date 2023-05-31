@@ -11,6 +11,21 @@ export const severityEnum = severity;
 
 export const findingsRouter = createTRPCRouter({
   getFindings: protectedProcedure.query(async (): Promise<finding[]> => {
-    return await readFindingsFromFS();
+    const findings = await readFindingsFromFS();
+    const disclosures = await readDisclosuresFromFS();
+
+    console.log('What is going on?');
+    console.log(disclosures.length);
+    for (const f of findings) {
+      //find a disclosure with the same name, and a matching host
+      f.disclosure = disclosures.find(
+        (d) => d.name === f.name && d.hosts.some((h) => h == f.host)
+      );
+
+      if (f.disclosure) {
+        console.log('result', f.disclosure);
+      }
+    }
+    return findings;
   }),
 });

@@ -14,7 +14,7 @@ import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
 import moment from 'moment';
-import { DisclosureStatusTag } from '~/components/disclosure-status';
+import { disclosureStatus } from '~/shared/finding';
 import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { ScanInformationBlock } from '~/components/findings/scan-info-block';
@@ -36,16 +36,17 @@ const Home: NextPage = () => {
 
       <div className="container flex flex-col items-center justify-center gap-12 px-2 py-16 ">
         <div className="flex h-full w-full flex-col text-white">
-          <div className="w-full justify-start">
-            <input
-              type="checkbox"
-              checked={hideDisclosed}
-              onChange={() => setHideDisclosed(!hideDisclosed)}
-              className="m-2"
-            />
-            Hide disclosed findings
-          </div>
-
+          {findings && findings.some((f) => f.disclosure) && (
+            <div className="w-full justify-start">
+              <input
+                type="checkbox"
+                checked={hideDisclosed}
+                onChange={() => setHideDisclosed(!hideDisclosed)}
+                className="m-2"
+              />
+              Hide disclosed findings
+            </div>
+          )}
           <table className="table-auto">
             <thead className="borderb border-collapse border-gray-600 bg-white/10">
               <tr className="border border-gray-600">
@@ -88,7 +89,9 @@ const Home: NextPage = () => {
                           {f.description}
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
-                          {f.disclosure?.status ?? 'Not Started'}
+                          {f.disclosure
+                            ? disclosureStatus[f.disclosure.status]
+                            : 'Not Started'}
                         </td>
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           {f.template}
