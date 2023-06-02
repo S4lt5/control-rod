@@ -129,28 +129,35 @@ const Home: NextPage = () => {
                                 </ul>
                               </div>
                             </div>
-                            <div className="flex grow basis-1/2 flex-col  py-4 pl-4">
-                              <button
-                                className="align-center m-2 justify-center rounded bg-indigo-400 p-2 text-white hover:bg-indigo-300"
-                                onClick={() => {
-                                  void generateDisclosureTemplate
-                                    .mutateAsync(d.id)
-                                    .catch((e) => {
-                                      alert(
-                                        'something went wrong generating the dislcosure template.'
-                                      );
-                                    })
-                                    .then((d) => {
-                                      const mediaType =
-                                        'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,';
-                                      window.location.href = `${mediaType}${
-                                        d ?? ''
-                                      }`;
-                                    });
-                                }}
-                              >
-                                Download Disclosure
-                              </button>
+                            <div className="flex grow basis-1/2 flex-col justify-end  py-4 pl-4">
+                              <div className="flex flex-row justify-end ">
+                                <button
+                                  className="m-2  inline-flex items-center rounded bg-indigo-400 p-2 align-middle  text-white hover:bg-indigo-300"
+                                  onClick={() => {
+                                    void generateDisclosureTemplate
+                                      .mutateAsync(d.id)
+                                      .catch((e) => {
+                                        alert(
+                                          'something went wrong generating the dislcosure template.'
+                                        );
+                                      })
+                                      .then((d) => {
+                                        const mediaType =
+                                          'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,';
+                                        window.location.href = `${mediaType}${
+                                          d ?? ''
+                                        }`;
+                                      });
+                                  }}
+                                >
+                                  <img
+                                    alt="download template"
+                                    className="w-12"
+                                    src="/docx_icon.svg"
+                                  ></img>
+                                  Download Template
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </td>
