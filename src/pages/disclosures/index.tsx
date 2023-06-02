@@ -134,10 +134,11 @@ const Home: NextPage = () => {
                                   void generateDisclosureTemplate
                                     .mutateAsync(d.id)
                                     .catch((e) => {
-                                      console.log('oh noes', e);
+                                      alert(
+                                        'something went wrong generating the dislcosure template.'
+                                      );
                                     })
                                     .then((d) => {
-                                      console.log('yay', d);
                                       const mediaType =
                                         'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,';
                                       window.location.href = `${mediaType}${
