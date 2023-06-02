@@ -52,6 +52,40 @@ export class FileFindingsStore implements FindingsStore {
 }
 
 export class FileDisclosureStore implements DisclosureStore {
+  async updateDisclosureStatus(
+    id: string,
+    status: disclosureStatus
+  ): Promise<boolean> {
+    try {
+      let allDisclosures = await this.getDisclosures();
+      const foundDisclosure = allDisclosures.find((d) => d.id === id);
+
+      if (!foundDisclosure) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'No such disclosure exists.',
+        });
+      }
+
+      //delete the disclosure if I'm marking it deleted
+      if (status == disclosureStatus.deleted) {
+        allDisclosures = allDisclosures.filter(
+          (d) => d.id != foundDisclosure.id
+        );
+      } else {
+        foundDisclosure.status = status;
+      }
+
+      await fs.writeFile(
+        dataDirectory + '/disclosures.json',
+        JSON.stringify(allDisclosures)
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async getDisclosureTemplate(id: string): Promise<string> {
     const foundDisclosure = (await this.getDisclosures()).find(
       (d) => d.id === id

@@ -26,12 +26,19 @@ function createFilterFn<T extends disclosure>(query: string) {
 }
 
 const Home: NextPage = () => {
+  const [editing, setEditing] = useState(''); //if the user is editing the status
+  const [selectedStatusValue, setSelectedStatusValue] = useState(0); //what the user has selected in the 'status' dropdown
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
-  const { data: disclosures, status: queryStatus } =
-    api.disclosures.getDisclosures.useQuery();
+  const {
+    data: disclosures,
+    status: queryStatus,
+    refetch: fetchDisclosures,
+  } = api.disclosures.getDisclosures.useQuery();
   const generateDisclosureTemplate =
     api.disclosures.generateDisclosureTemplate.useMutation();
+  const updateDisclosureStatus =
+    api.disclosures.updateDisclosureStatus.useMutation();
   return (
     <>
       <Head>
@@ -129,7 +136,79 @@ const Home: NextPage = () => {
                                 </ul>
                               </div>
                             </div>
-                            <div className="flex grow basis-1/2 flex-col justify-end  py-4 pl-4">
+                            <div className="flex w-full  grow basis-1/2 flex-col justify-end  py-4 pl-4">
+                              <div className="flex grow flex-row justify-start">
+                                <div className="inline-flex items-start gap-2">
+                                  <span>Status:</span>
+                                  {editing != d.id && (
+                                    <>
+                                      <span>{disclosureStatus[d.status]}</span>
+                                      <span
+                                        className="w-6 text-slate-400 hover:cursor-pointer"
+                                        onClick={() => {
+                                          setEditing(d.id);
+                                          setSelectedStatusValue(d.status);
+                                        }}
+                                      >
+                                        [edit]
+                                      </span>
+                                    </>
+                                  )}
+                                  {editing == d.id && (
+                                    <>
+                                      <select
+                                        defaultValue={d.status}
+                                        className="text-black"
+                                        onChange={(e) => {
+                                          setSelectedStatusValue(
+                                            Number(e.target.value.toString())
+                                          );
+                                        }}
+                                      >
+                                        {Object.entries(disclosureStatus)
+                                          .filter((k) => isNaN(Number(k[1]))) //value is not a number, value is the string rep
+
+                                          .map(([key, value]) => (
+                                            <option key={key} value={key}>
+                                              {value}
+                                            </option>
+                                          ))}
+                                      </select>
+                                      <span></span>
+                                      {selectedStatusValue != d.status && (
+                                        <span
+                                          className=" text-slate-400 hover:cursor-pointer"
+                                          onClick={() => {
+                                            void updateDisclosureStatus
+                                              .mutateAsync({
+                                                id: d.id,
+                                                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                                status: selectedStatusValue,
+                                              })
+                                              .catch(() => {
+                                                console.log(
+                                                  'Error updating status value.'
+                                                );
+                                              })
+                                              .then(() => {
+                                                void fetchDisclosures();
+                                              });
+                                            setEditing('');
+                                          }}
+                                        >
+                                          [save]
+                                        </span>
+                                      )}
+                                      <span
+                                        className="text-slate-400 hover:cursor-pointer"
+                                        onClick={() => setEditing('')}
+                                      >
+                                        [cancel]
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
                               <div className="flex flex-row justify-end ">
                                 <button
                                   className="m-2  inline-flex items-center rounded bg-indigo-400 p-2 align-middle  text-white hover:bg-indigo-300"

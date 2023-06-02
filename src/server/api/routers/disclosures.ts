@@ -13,6 +13,20 @@ import { FileFindingsStore, FileDisclosureStore } from '~/shared/backend_file';
 
 const disclosureStore = new FileDisclosureStore();
 export const disclosuresRouter = createTRPCRouter({
+  updateDisclosureStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().nonempty(),
+        status: z.nativeEnum(disclosureStatus),
+      })
+    )
+    .mutation(async (opts): Promise<boolean> => {
+      const { input } = opts;
+      return await disclosureStore.updateDisclosureStatus(
+        input.id,
+        input.status
+      );
+    }),
   newDisclosure: protectedProcedure
     .input(
       z.object({

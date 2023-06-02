@@ -32,6 +32,7 @@ enum disclosureStatus {
   uncertain, // the finding MIGHT be exploitable, but it has not been demonstrated
   remediated,
   invalid, // the finding was proven to not be exploitable or otherwise a false positive
+  deleted, //used to indicate that the report will be removed/deleted/be inaccessible
 }
 /**
  * A disclosure history is a list of previous status and the time they were recorded.
@@ -169,6 +170,16 @@ interface DisclosureStore {
    * @param id the disclosure ID to generate a template for
    */
   getDisclosureTemplate(id: string): Promise<string>;
+
+  /**
+   * Update a disclosure with a new status. If status is "deleted", delete the disclosure.
+   * @param id
+   * @param status
+   */
+  updateDisclosureStatus(
+    id: string,
+    status: disclosureStatus
+  ): Promise<boolean>;
 }
 
 interface FindingsStore {
