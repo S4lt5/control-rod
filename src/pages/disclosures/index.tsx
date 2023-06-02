@@ -2,7 +2,7 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { type disclosure, severity, disclosureStatus } from '~/shared/finding';
 import moment from 'moment';
 import { api } from '~/utils/api';
@@ -59,13 +59,12 @@ const Home: NextPage = () => {
                   .sort(createCompareFn('status', 'desc'))
                   .filter(createFilterFn(search))
                   .map((d) => (
-                    <>
+                    <React.Fragment key={d.id}>
                       <tr
                         onClick={() => {
                           setExpanded(d.id);
                         }}
                         className="every_two_rows  hover:cursor-pointer hover:bg-white/20"
-                        key={d.id}
                       >
                         <td className="border border-y-0 border-l-0 border-gray-700  ">
                           {d.name}
@@ -86,7 +85,10 @@ const Home: NextPage = () => {
                           {moment(d.timestamp).format('MM/DD/YY')}
                         </td>
                       </tr>
-                      <tr className="every_two_rows mt-4 border-x-2 border-y-2 border-gray-400">
+                      <tr
+                        className="every_two_rows mt-4 border-x-2 border-y-2 border-gray-400"
+                        key={`${d.id}-b`}
+                      >
                         <td colSpan={5} className="" hidden={d.id !== expanded}>
                           <div className="flex flex-row ">
                             <div className="w-24 shrink">
@@ -153,7 +155,7 @@ const Home: NextPage = () => {
                           </div>
                         </td>
                       </tr>
-                    </>
+                    </React.Fragment>
                   ))}
             </tbody>
           </table>
@@ -177,7 +179,7 @@ const Home: NextPage = () => {
                 cy="12"
                 r="10"
                 stroke="currentColor"
-                stroke-width="4"
+                strokeWidth={4}
               ></circle>
               <path
                 className="opacity-75"
