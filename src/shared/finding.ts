@@ -164,6 +164,11 @@ function createFindingFilterFn<T extends finding>(query: string) {
 interface DisclosureStore {
   getDisclosures(): Promise<disclosure[]>;
   addDisclosure(newDisclosure: disclosure): Promise<boolean>;
+  /**
+   * Return a base64'd docx file based on an existing disclosureID
+   * @param id the disclosure ID to generate a template for
+   */
+  getDisclosureTemplate(id: string): Promise<string>;
 }
 
 interface FindingsStore {

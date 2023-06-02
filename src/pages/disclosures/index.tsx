@@ -30,7 +30,8 @@ const Home: NextPage = () => {
   const [search] = useAtom(atomSearch);
   const { data: disclosures, status: queryStatus } =
     api.disclosures.getDisclosures.useQuery();
-
+  const generateDisclosureTemplate =
+    api.disclosures.generateDisclosureTemplate.useMutation();
   return (
     <>
       <Head>
@@ -126,7 +127,28 @@ const Home: NextPage = () => {
                                 </ul>
                               </div>
                             </div>
-                            <div className="flex grow basis-1/2 flex-col  py-4 pl-4"></div>
+                            <div className="flex grow basis-1/2 flex-col  py-4 pl-4">
+                              <button
+                                className="align-center m-2 justify-center rounded bg-indigo-400 p-2 text-white hover:bg-indigo-300"
+                                onClick={() => {
+                                  void generateDisclosureTemplate
+                                    .mutateAsync(d.id)
+                                    .catch((e) => {
+                                      console.log('oh noes', e);
+                                    })
+                                    .then((d) => {
+                                      console.log('yay', d);
+                                      const mediaType =
+                                        'data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,';
+                                      window.location.href = `${mediaType}${
+                                        d ?? ''
+                                      }`;
+                                    });
+                                }}
+                              >
+                                Download Disclosure
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>

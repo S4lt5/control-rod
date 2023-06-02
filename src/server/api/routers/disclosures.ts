@@ -11,9 +11,6 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { FileFindingsStore, FileDisclosureStore } from '~/shared/backend_file';
 
-import JSZip from 'jszip';
-import Docxtemplater from 'docxtemplater';
-
 const disclosureStore = new FileDisclosureStore();
 export const disclosuresRouter = createTRPCRouter({
   newDisclosure: protectedProcedure
@@ -44,4 +41,10 @@ export const disclosuresRouter = createTRPCRouter({
   getDisclosures: protectedProcedure.query(async (): Promise<disclosure[]> => {
     return await disclosureStore.getDisclosures();
   }),
+  generateDisclosureTemplate: protectedProcedure
+    .input(z.string())
+    .mutation(async (opts): Promise<string> => {
+      const { input } = opts;
+      return await disclosureStore.getDisclosureTemplate(input);
+    }),
 });

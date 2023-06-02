@@ -10,6 +10,8 @@ import {
   type FindingsStore,
   severity,
 } from './finding';
+import { TRPCError } from '@trpc/server';
+import { TemplateGenerator } from './disclosure_template_generator';
 
 const dataDirectory: string = path.join(process.cwd(), 'data');
 
@@ -50,6 +52,22 @@ export class FileFindingsStore implements FindingsStore {
 }
 
 export class FileDisclosureStore implements DisclosureStore {
+  async getDisclosureTemplate(id: string): Promise<string> {
+    const foundDisclosure = (await this.getDisclosures()).find(
+      (d) => d.id === id
+    );
+
+    if (!foundDisclosure) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'No such disclosure exists.',
+      });
+    }
+    const b64Report = await TemplateGenerator.createTemplateFromDisclosure(
+      foundDisclosure
+    );
+    return b64Report;
+  }
   async getDisclosures(): Promise<disclosure[]> {
     try {
       const data = await fs.readFile(
