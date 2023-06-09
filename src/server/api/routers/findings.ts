@@ -1,9 +1,10 @@
 import { type finding, severity } from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { FileFindingsStore, FileDisclosureStore } from '~/shared/backend_file';
+import { AwsFindingStore } from '~/shared/backend_aws';
 export const severityEnum = severity;
 
-const fileStore = new FileFindingsStore();
+const fileStore = new AwsFindingStore();
 const disclosureStore = new FileDisclosureStore();
 
 export const findingsRouter = createTRPCRouter({
