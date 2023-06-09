@@ -11,8 +11,6 @@ export const findingsRouter = createTRPCRouter({
     const findings = await fileStore.getFindings();
     const disclosures = await disclosureStore.getDisclosures();
 
-    console.log('What is going on?');
-    console.log(disclosures.length);
     for (const f of findings) {
       //find a disclosure with the same name, and a matching host
       f.disclosure = disclosures.find(
