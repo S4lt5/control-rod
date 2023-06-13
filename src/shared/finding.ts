@@ -108,6 +108,7 @@ class finding {
   reference: string[];
   //If true, the finding is open in the UI for detail view
   expanded: boolean;
+  queryTimestamp: number | undefined; //local system timestamp when the data was pulled -- used for cache freshness
   disclosure: disclosure | undefined; //disclosure can be missing
 
   /**
