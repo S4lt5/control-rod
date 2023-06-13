@@ -85,6 +85,7 @@ export class AwsFindingStore implements FindingsStore {
           timestamp: '',
           expanded: false,
           disclosure: undefined,
+          queryTimestamp: undefined,
         },
       ];
     }

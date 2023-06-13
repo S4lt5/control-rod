@@ -187,6 +187,11 @@ interface FindingsStore {
   getFindings(): Promise<finding[]>;
 }
 
+//Used to cache slow findings operations in e.g. memory, redis, rdbms
+interface FindingsCache {
+  getFindings(): Promise<finding[]>;
+  putFindings(findings: finding[]): Promise<boolean>;
+}
 export {
   severity,
   finding,
@@ -196,4 +201,5 @@ export {
   createFindingFilterFn,
   type FindingsStore,
   type DisclosureStore,
+  type FindingsCache,
 };

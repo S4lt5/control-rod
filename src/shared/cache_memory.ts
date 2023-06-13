@@ -4,10 +4,9 @@ import { promises as fs } from 'fs';
 import {
   disclosure,
   disclosureStatus,
-  finding,
-  type nestedFinding,
+  type finding,
   type DisclosureStore,
-  type FindingsStore,
+  type FindingsCache,
   severity,
 } from './finding';
 import { TRPCError } from '@trpc/server';
@@ -15,20 +14,16 @@ import { TemplateGenerator } from './disclosure_template_generator';
 
 const dataDirectory: string = path.join(process.cwd(), 'data');
 
-export class FileFindingsStore implements FindingsStore {
+//A "fast" store mostly used to test fast/slow caching when not connected to athena
+export class MemoryFindingCache implements FindingsCache {
+  static findings: finding[] = new Array<finding>();
   async getFindings(): Promise<finding[]> {
     try {
-      const dataDirectory = path.join(process.cwd(), 'data');
-
-      const data = await fs.readFile(dataDirectory + '/findings.json', 'utf8');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const nested_findings: nestedFinding[] = JSON.parse(data);
-      const flat_findings: finding[] = nested_findings.map(
-        (f) => new finding(f)
-      );
-
+      //create a copy of findings and return it
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return flat_findings;
+      //Hack: i need to await something, so I'll await nothing here
+      await Promise.resolve();
+      return MemoryFindingCache.findings.map((e) => ({ ...e }));
     } catch {
       return [
         {
@@ -49,6 +44,18 @@ export class FileFindingsStore implements FindingsStore {
         },
       ];
     }
+  }
+  async putFindings(findings: finding[]): Promise<boolean> {
+    console.debug('Entering putfindings');
+    //copy the inbound array and store it
+    MemoryFindingCache.findings = findings.map((e) => ({
+      ...e,
+    }));
+    console.debug('I copied the array');
+    //Hack: i need to await something, so I'll await nothing here
+    await Promise.resolve();
+    console.debug('I returned');
+    return true;
   }
 }
 
