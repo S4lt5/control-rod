@@ -14,9 +14,9 @@ import { TRPCError } from '@trpc/server';
 import { TemplateGenerator } from './disclosure_template_generator';
 import { AWSHelpers } from './aws_helpers';
 
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { StartQueryExecutionCommand } from '@aws-sdk/client-athena';
 
+const awsBucketName = process.env.AWS_BUCKET_NAME ?? '';
 const dataDirectory: string = path.join(process.cwd(), 'data');
 
 /**
@@ -56,7 +56,7 @@ export class AwsFindingStore implements FindingsStore {
         GROUP BY (host,template)',
 
         ResultConfiguration: {
-          OutputLocation: 's3://cisa-pond-test-5-artifacts/query-output/',
+          OutputLocation: `s3://${awsBucketName}/query-output/`,
         },
       });
 
