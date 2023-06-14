@@ -44,8 +44,16 @@ export class AwsFindingStore implements FindingsStore {
   async getFindings(): Promise<finding[]> {
     try {
       const command = new StartQueryExecutionCommand({
+        //Group by host and name, and then left join for the other details
         QueryString:
-          'select "extracted-results", host, "matched-at", template, timestamp, info.description as description, info.name as name, info.severity as severity, info.tags as tags, info.reference as reference from nuclei_db.findings_db;',
+          'select ARBITRARY("extracted-results"), host, ARBITRARY("matched-at"), template, MAX(timestamp) \
+           , ARBITRARY(info.tags) as tags  \
+           , ARBITRARY(info.reference) as reference \
+           , ARBITRARY(info.description) as description \
+          , ARBITRARY(info.name) as name \
+          , ARBITRARY(info.severity) as severity \
+           from nuclei_db.findings_db \
+        GROUP BY (host,template)',
 
         ResultConfiguration: {
           OutputLocation: 's3://cisa-pond-test-5-artifacts/query-output/',
@@ -58,17 +66,6 @@ export class AwsFindingStore implements FindingsStore {
       const records = AWSHelpers.ReadCSVFindings(resultsBody);
       //read body as CSV
       return records;
-      const dataDirectory = path.join(process.cwd(), 'data');
-
-      const data = await fs.readFile(dataDirectory + '/findings.json', 'utf8');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const nested_findings: nestedFinding[] = JSON.parse(data);
-      const flat_findings: finding[] = nested_findings.map(
-        (f) => new finding(f)
-      );
-      console.log(flat_findings);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return flat_findings;
     } catch (err) {
       return [
         {

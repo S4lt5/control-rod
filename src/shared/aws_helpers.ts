@@ -71,7 +71,7 @@ export class AWSHelpers {
     //Return a failure if it is anything but successful
     if (queryStatus?.QueryExecution?.Status?.State != 'SUCCEEDED') {
       throw new Error(
-        `The Athena query had a status of ${queryStatus?.QueryExecution?.Status?.State} `
+        `The Athena query had a status of ${queryStatus?.QueryExecution?.Status?.State} - ${queryStatus?.QueryExecution?.Status?.AthenaError?.ErrorMessage} `
       );
     }
     //get the s3 location
