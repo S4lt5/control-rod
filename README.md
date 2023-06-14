@@ -4,6 +4,14 @@ A front end for [Nuclei](https://github.com/projectdiscovery/nuclei) and [Nuclea
 
 # Getting Started
 
+## Authentication
+
+This app is based on the [T3 App](https://create.t3.gg/) and configured for the data APIs to be protected.
+
+To get _some_ sort of auth working, check out the `Authentication` section at [T3 First Steps](https://create.t3.gg/en/usage/first-steps)
+
+Discord authentication is easy to implement and recommended for local development.
+
 ## Nuclearpond / s3 / athena
 
 If you are deploying to an instance with [Nuclear Pond's Terraform Module](https://github.com/DevSecOpsDocs/terraform-nuclear-pond) deployed, set the following in your .env:
