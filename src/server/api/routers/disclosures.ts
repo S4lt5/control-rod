@@ -26,7 +26,7 @@ export const disclosuresRouter = createTRPCRouter({
         template: z.string().nonempty(),
         hosts: z.string().nonempty().array(),
         severity: z.nativeEnum(severity),
-        references: z.string().nonempty().array(),
+        references: z.string().array(),
         description: z.string().nonempty(),
       })
     )
