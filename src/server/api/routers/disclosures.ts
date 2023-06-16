@@ -1,15 +1,7 @@
-import path from 'path';
-import { promises as fs } from 'fs';
-import {
-  disclosure,
-  disclosureStatus,
-  severity,
-  disclosureHistory,
-} from '~/shared/finding';
+import { disclosure, disclosureStatus, severity } from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
-import { FileFindingsStore, FileDisclosureStore } from '~/shared/backend_file';
+import { FileDisclosureStore } from '~/shared/backend_file';
 
 const disclosureStore = new FileDisclosureStore();
 export const disclosuresRouter = createTRPCRouter({

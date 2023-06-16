@@ -5,10 +5,12 @@ import {
   type FindingsCache,
   type DisclosureStore,
 } from '~/shared/finding';
+import { createCompareFn } from '~/shared/helpers';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { FileFindingsStore, FileDisclosureStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { MemoryFindingCache } from '~/shared/cache_memory';
+import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
 export const severityEnum = severity;
 
 //const fileStore = new AwsFindingStore();
@@ -20,10 +22,14 @@ let fastFindingsCache: FindingsCache;
 let slowFindingsStore: FindingsStore;
 let disclosureStore: DisclosureStore;
 if (process.env.USE_AWS_DATA_SOURCES == 'true') {
+  //TODO: the 'fast' store will be aurora or sqlite in cloud config
   fastFindingsCache = new MemoryFindingCache();
 
-  //TODO: Come up with a good way to pick store configs, and not in this hard coded manner
   slowFindingsStore = new AwsFindingStore();
+  disclosureStore = new FileDisclosureStore();
+} else if (process.env.USE_LOCAL_ATEHNA_CSV_SOURCE == 'true') {
+  //we're using a local findings.csv export from athena
+  slowFindingsStore = new AthenaCSVFileStore();
   disclosureStore = new FileDisclosureStore();
 } else {
   //We're running in dev mode, or standalone
@@ -55,9 +61,13 @@ export const findingsRouter = createTRPCRouter({
         fastFindings[0]?.queryTimestamp < thirtyMinutesAgo
       ) {
         //fetch long cache, update the query time to show that it was just fetched.
+        //sort by severity, proactively
         const rightNow = Date.now();
-        findings = await slowFindingsStore.getFindings();
+        findings = (await slowFindingsStore.getFindings()).sort(
+          createCompareFn('severity', 'desc')
+        );
         findings.forEach((f) => (f.queryTimestamp = rightNow));
+
         //store into fast storage
         await fastFindingsCache.putFindings(findings);
       } else {
@@ -67,7 +77,9 @@ export const findingsRouter = createTRPCRouter({
     }
     //otherwise, we have no fast store, just pull from the long store
     else {
-      findings = await slowFindingsStore.getFindings();
+      findings = (await slowFindingsStore.getFindings()).sort(
+        createCompareFn('severity', 'desc')
+      );
     }
 
     const disclosures = await disclosureStore.getDisclosures();

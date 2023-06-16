@@ -14,65 +14,25 @@ import { TRPCError } from '@trpc/server';
 import { TemplateGenerator } from './disclosure_template_generator';
 import { AWSHelpers } from './aws_helpers';
 
-import { StartQueryExecutionCommand } from '@aws-sdk/client-athena';
-
-const awsBucketName = process.env.AWS_BUCKET_NAME ?? '';
 const dataDirectory: string = path.join(process.cwd(), 'data');
-
-/**
- * This finding store occasionally pulls fresh findings from Athena, and then caches them in a more accessible location
- */
-
-/*export interface findingInfo {
-  description: string;
-  name: string;
-  severity: string;
-  tags: string[];
-  reference: string[];
-}
-
-export interface nestedFinding {
-  extractedResults: string;
-  host: string;
-  info: findingInfo; // this exists in the source JSON
-  'matched-at': string;
-  template: string;
-  timestamp: string;
-}
+/*
+Similar to AWS Store, but reads an athena CSV File backup for easy pull to offline database
 */
-export class AwsFindingStore implements FindingsStore {
+export class AthenaCSVFileStore implements FindingsStore {
   async getFindings(): Promise<finding[]> {
     try {
-      const command = new StartQueryExecutionCommand({
-        //Group by host and name, and then left join for the other details
-        //ignore the mountain of "Weak Cipher Suites..." findings
-        QueryString:
-          'select ARBITRARY("extracted-results"), host, ARBITRARY("matched-at") as matchedAt, template, MAX(timestamp) \
-           , ARBITRARY(info.tags) as tags  \
-           , ARBITRARY(info.reference) as reference \
-           , ARBITRARY(info.description) as description \
-          , ARBITRARY(info.name) as name \
-          , ARBITRARY(info.severity) as severity \
-           from nuclei_db.findings_db \
-           WHERE info.name != \'Weak Cipher Suites Detection\' \
-        GROUP BY (host,template)',
+      const dataDirectory = path.join(process.cwd(), 'data');
 
-        ResultConfiguration: {
-          OutputLocation: `s3://${awsBucketName}/query-output/`,
-        },
-      });
-
-      //wait for result, get raw csv
-      const resultsBody = await AWSHelpers.runAthenaQuery(command);
+      const data = await fs.readFile(dataDirectory + '/findings.csv', 'utf8');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       //convert csv into findings
-      const records = AWSHelpers.ReadCSVFindings(resultsBody);
-      //read body as CSV
+      const records = AWSHelpers.ReadCSVFindings(data);
       return records;
-    } catch (err) {
+    } catch {
       return [
         {
           id: 'an-id',
-          name: 'There was a problem reading the findings data.' + err,
+          name: 'There was a problem reading the findings data.',
           description: '',
           reference: [],
           severity: severity.info,
