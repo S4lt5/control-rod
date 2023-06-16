@@ -72,7 +72,8 @@ export class AwsFindingStore implements FindingsStore {
       return [
         {
           id: 'an-id',
-          name: 'There was a problem reading the findings data.' + err,
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          name: `There was a problem reading the findings data. ${err}`,
           description: '',
           reference: [],
           severity: severity.info,

@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   AthenaClient,
-  StartQueryExecutionCommand,
+  type StartQueryExecutionCommand,
   GetQueryExecutionCommand,
-  GetQueryExecutionCommandOutput,
+  type GetQueryExecutionCommandOutput,
 } from '@aws-sdk/client-athena';
 import { parse } from 'csv-parse/sync';
 
@@ -22,7 +25,7 @@ export class AWSHelpers {
       columns: true,
     });
 
-    const findings_array = records.map((r) => {
+    const findings_array: finding[] = records.map((r: string) => {
       return new finding({
         extractedResults: r['extracted-results'],
         host: r['host'],
@@ -52,11 +55,9 @@ export class AWSHelpers {
     const checkCommand = new GetQueryExecutionCommand({
       QueryExecutionId: QueryExecutionId,
     });
-    var queryStatus: GetQueryExecutionCommandOutput | null = null;
-    let ranCount = 0;
+    let queryStatus: GetQueryExecutionCommandOutput | null = null;
     //retry up to MAX_ATHENA_RETRIES, for a total time of MAX_ATHENA_RETRIES * ATHENA_DELAY_MS + misc await time for the operations to complete
     for (let i = 0; i < MAX_ATHENA_RETRIES; i++) {
-      ranCount++;
       queryStatus = await athenaClient.send(checkCommand);
       if (
         queryStatus.QueryExecution?.Status?.State == 'SUCCEEDED' ||
@@ -71,7 +72,12 @@ export class AWSHelpers {
     //Return a failure if it is anything but successful
     if (queryStatus?.QueryExecution?.Status?.State != 'SUCCEEDED') {
       throw new Error(
-        `The Athena query had a status of ${queryStatus?.QueryExecution?.Status?.State} - ${queryStatus?.QueryExecution?.Status?.AthenaError?.ErrorMessage} `
+        `The Athena query had a status of ${
+          queryStatus?.QueryExecution?.Status?.State ?? 'Undefined'
+        } - ${
+          queryStatus?.QueryExecution?.Status?.AthenaError?.ErrorMessage ??
+          'Undefined'
+        } `
       );
     }
     //get the s3 location
