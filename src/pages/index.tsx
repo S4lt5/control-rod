@@ -2,30 +2,27 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { useSession } from 'next-auth/react';
-import {
-  severity,
-  type finding,
-  createFindingFilterFn,
-} from '~/shared/finding';
+import { severity, type finding } from '~/shared/finding';
 import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
-import { createCompareFn } from '~/shared/helpers';
+
+import React from 'react';
 import moment from 'moment';
 import { disclosureStatus } from '~/shared/finding';
 import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { ScanInformationBlock } from '~/components/findings/scan-info-block';
+import { FixedSizeList, FixedSizeListProps } from 'react-window';
 
 const Home: NextPage = () => {
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
   const [hideDisclosed, setHideDisclosed] = useState(true);
   const { data: findings, status: findingsStatus } =
-    api.findings.getFindings.useQuery();
-
+    api.findings.getFindings.useQuery({ search: search });
   return (
     <>
       <Head>
@@ -62,11 +59,9 @@ const Home: NextPage = () => {
             <tbody>
               {findings &&
                 findings
-                  .sort(createCompareFn('severity', 'desc'))
                   .filter((f: finding) => {
                     return !hideDisclosed || f.disclosure == null;
                   })
-                  .filter(createFindingFilterFn(search))
                   .map((f) => (
                     <>
                       <tr
