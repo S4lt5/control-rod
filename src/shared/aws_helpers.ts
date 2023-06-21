@@ -40,7 +40,7 @@ export class AWSHelpers {
             .replace(']', '')
             .split(','),
         },
-        'matched-at': r['matched-at'],
+        'matched-at': r['matchedAt'],
         template: r['template'],
         timestamp: r['timestamp'],
       });
