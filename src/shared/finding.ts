@@ -2,8 +2,9 @@ import { match } from 'assert';
 import { v4 as uuidv4 } from 'uuid';
 
 enum severity {
-  critical = 4,
-  high = 3,
+  critical = 5,
+  high = 4,
+  unknown = 3,
   medium = 2,
   low = 1,
   info = 0,
