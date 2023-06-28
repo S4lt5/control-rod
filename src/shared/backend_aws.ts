@@ -47,15 +47,19 @@ export class AwsFindingStore implements FindingsStore {
         //Group by host and name, and then left join for the other details
         //ignore the mountain of "Weak Cipher Suites..." findings
         QueryString:
-          'select ARBITRARY("extracted-results"), host, ARBITRARY("matched-at") as matchedAt, template, MAX(timestamp) \
+          "select ARBITRARY(\"extracted-results\"), host, ARBITRARY(\"matched-at\") as matchedAt, template, MAX(timestamp) \
            , ARBITRARY(info.tags) as tags  \
            , ARBITRARY(info.reference) as reference \
            , ARBITRARY(info.description) as description \
           , ARBITRARY(info.name) as name \
           , ARBITRARY(info.severity) as severity \
            from nuclei_db.findings_db \
-           WHERE info.name != \'Weak Cipher Suites Detection\' \
-        GROUP BY (host,template)',
+           WHERE info.name != 'Weak Cipher Suites Detection' \
+           AND template not like 'dns/%' \
+           AND template not like 'ssl/%' \
+           AND template != 'http/technologies/waf-detect.yaml' \
+           AND template != 'http/fuzzing/waf-fuzz.yaml' \
+        GROUP BY (host,template)",
 
         ResultConfiguration: {
           OutputLocation: `s3://${awsBucketName}/query-output/`,
