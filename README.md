@@ -12,6 +12,8 @@ To get _some_ sort of auth working, check out the `Authentication` section at [T
 
 Discord authentication is easy to implement and recommended for local development.
 
+After setting up auth, make sure you run `npx prisma db push` on a fresh install. This will create the authentication database.
+
 ## Nuclearpond / s3 / athena
 
 If you are deploying to an instance with [Nuclear Pond's Terraform Module](https://github.com/DevSecOpsDocs/terraform-nuclear-pond) deployed, set the following in your .env:
