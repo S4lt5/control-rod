@@ -1,28 +1,36 @@
-# Create T3 App
+# Control Rod
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A front end for [Nuclei](https://github.com/projectdiscovery/nuclei) and [Nuclear Pond](https://github.com/DevSecOpsDocs/nuclearpond)
 
-## What's next? How do I make an app with this?
+# Getting Started
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Authentication
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+This app is based on the [T3 App](https://create.t3.gg/) and configured for the data APIs to be protected.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+To get _some_ sort of auth working, check out the `Authentication` section at [T3 First Steps](https://create.t3.gg/en/usage/first-steps)
 
-## Learn More
+Discord authentication is easy to implement and recommended for local development.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Nuclearpond / s3 / athena
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+If you are deploying to an instance with [Nuclear Pond's Terraform Module](https://github.com/DevSecOpsDocs/terraform-nuclear-pond) deployed, set the following in your .env:
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+```
+USE_AWS_DATA_SOURCES="true"
+AWS_BUCKET_NAME=nuclearpond-instance-name-artifacts
+```
 
-## How do I deploy this?
+And specify your artifacts bucket name in the AWS_BUCKET_NAME value.
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## Local File Based / Developer Mode
+
+If you are NOT deploying to a cloud environment, or do not wish to use s3/athena, leave the USE_AWS_DATA_SOURCES value unset.
+
+Copy a result JSON output file from nuclei into ./data/findings.json (You may need to wrap the JSONLines output into an array to make it a proper JSON file)
+
+In this mode of operation, Control Rod will use the local json files for both reading and writing findings and disclosure information.
+
+# Disclosure Template
+
+In the `/artifacts` directory, there is a disclosure_template.docx file which contains a basic disclosure template with various `{field}` tags. This can be edited with your team's logo, letterhead, formatting to allow for quick generation of disclosure notices of a particular finding.

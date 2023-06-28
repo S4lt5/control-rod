@@ -1,8 +1,10 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
+import { useRouter } from 'next/router';
 
 export const NavBar = () => {
+  const router = useRouter();
   const { data: sessionData } = useSession();
   const [search, setSearch] = useAtom(atomSearch);
 
@@ -13,20 +15,24 @@ export const NavBar = () => {
         className="fixed top-0 z-10 mt-0 h-auto w-full bg-gray-800 px-1 pb-1 pt-2 md:pt-1"
       >
         <div className="flex flex-wrap items-center">
-          <div className=" text-white md:w-48 ">
+          <div className=" hidden text-white sm:block md:w-48">
             <a href="#" aria-label="Home">
-              <img src="logo2.png" className="m-y-0 h-14 pl-8" />
+              <img src="/logo2.png" className="m-y-0 h-14 pl-8" />
             </a>
           </div>
 
           <div className="flex flex-1 justify-center text-white md:w-full md:justify-start ">
-            <span className="relative w-full">
+            <span
+              className={`relative w-full  ${
+                router.pathname == '/disclosures/new' ? 'hidden' : ''
+              }`}
+            >
               <input
                 aria-label="search"
                 type="search"
                 id="search"
                 placeholder="Search"
-                className="w-full appearance-none rounded border border-transparent bg-gray-900 px-2 py-3 pl-10 leading-normal text-white transition focus:border-gray-400 focus:outline-none"
+                className={` w-full appearance-none rounded border border-transparent bg-gray-900 px-2 py-3 pl-10 leading-normal text-white transition focus:border-gray-400 focus:outline-none`}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />

@@ -7,7 +7,7 @@ export const PageLayout = (props: PropsWithChildren) => {
     <>
       <NavBar></NavBar>
       <LeftNav></LeftNav>
-      <main className="static min-h-screen items-start bg-slate-900 pl-48">
+      <main className="static min-h-screen items-start bg-slate-900 md:pl-48">
         {props.children}
       </main>
     </>
