@@ -12,7 +12,7 @@ import { parse } from 'csv-parse/sync';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { finding } from './finding';
 //how long we will keep checking the query before giving up.
-const MAX_ATHENA_RETRIES = 50;
+const MAX_ATHENA_RETRIES = 100;
 const ATHENA_DELAY_MS = 200;
 
 const athenaClient = new AthenaClient({ region: 'us-east-1' });
