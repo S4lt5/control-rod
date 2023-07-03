@@ -258,7 +258,7 @@ const NewDisclosure: NextPage = () => {
                     description: newDisclosure.description,
                     hosts: newDisclosure.hosts,
                     severity: newDisclosure.severity,
-                    references: newDisclosure.references || new Array<string>(),
+                    references: newDisclosure.references ?? '',
                     template: newDisclosure.template,
                   })
                   .catch(() => {
