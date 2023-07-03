@@ -97,7 +97,11 @@ export const findingsRouter = createTRPCRouter({
           },
         });
       } else {
-        findings = await prisma.finding.findMany();
+        findings = await prisma.finding.findMany({
+          orderBy: {
+            severity: 'desc',
+          },
+        });
       }
 
       for (const f of findings) {
