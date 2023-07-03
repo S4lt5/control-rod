@@ -1,9 +1,10 @@
-import { disclosure, disclosureStatus, severity } from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
-import { FileDisclosureStore } from '~/shared/backend_file';
+import { Disclosure, disclosureStatus, severity } from '@prisma/client';
+import { prisma } from '~/server/db';
+import { TRPCError } from '@trpc/server';
+import { TemplateGenerator } from '~/shared/disclosure_template_generator';
 
-const disclosureStore = new FileDisclosureStore();
 export const disclosuresRouter = createTRPCRouter({
   updateDisclosureStatus: protectedProcedure
     .input(
@@ -14,43 +15,62 @@ export const disclosuresRouter = createTRPCRouter({
     )
     .mutation(async (opts): Promise<boolean> => {
       const { input } = opts;
-      return await disclosureStore.updateDisclosureStatus(
-        input.id,
-        input.status
-      );
+      await prisma.disclosure.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: input.status,
+        },
+      });
+      return true;
     }),
   newDisclosure: protectedProcedure
     .input(
       z.object({
         name: z.string().nonempty(),
         template: z.string().nonempty(),
-        hosts: z.string().nonempty().array(),
+        hosts: z.string().nonempty(),
         severity: z.nativeEnum(severity),
-        references: z.string().array(),
+        references: z.string(),
         description: z.string().nonempty(),
       })
     )
     .mutation(async (opts) => {
       const { input } = opts;
-      const newDisclosure = new disclosure(
-        input.name,
-        input.hosts,
-        input.template,
-        disclosureStatus.started,
-        '',
-        input.description,
-        input.severity,
-        input.references
-      );
-      return await disclosureStore.addDisclosure(newDisclosure);
+      await prisma.disclosure.create({
+        data: {
+          name: input.name,
+          hosts: input.hosts,
+          template: input.template,
+          status: disclosureStatus.started,
+          ticketURL: '',
+          description: input.description,
+          severity: input.severity,
+          references: input.references,
+        },
+      });
     }),
-  getDisclosures: protectedProcedure.query(async (): Promise<disclosure[]> => {
-    return await disclosureStore.getDisclosures();
+  getDisclosures: protectedProcedure.query(async (): Promise<Disclosure[]> => {
+    return await prisma.disclosure.findMany();
   }),
   generateDisclosureTemplate: protectedProcedure
     .input(z.string())
     .mutation(async (opts): Promise<string> => {
       const { input } = opts;
-      return await disclosureStore.getDisclosureTemplate(input);
+      const foundDisclosure = await prisma.disclosure.findFirst({
+        where: { id: input },
+      });
+
+      if (!foundDisclosure) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'No such disclosure exists.',
+        });
+      }
+      const b64Report = await TemplateGenerator.createTemplateFromDisclosure(
+        foundDisclosure
+      );
+      return b64Report;
     }),
 });
