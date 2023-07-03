@@ -69,9 +69,9 @@ model Disclosure {
     status      disclosureStatus
     ticketURL   String
     history     DisclosureHistory[]
-    description String
+    description String              @db.VarChar(3000)
     severity    severity
-    references  String // split by \n
+    references  String              @db.VarChar(1000) // split by \n
 }
 
 model DisclosureHistory {
@@ -104,18 +104,17 @@ enum severity {
 
 model Finding {
     id               String    @id @default(cuid())
-    extractedResults String
+    extractedResults String    @db.VarChar(500)
     host             String
-    matchedAt        String
+    matchedAt        String    @db.VarChar(1000)
     template         String
     timestamp        String
-    description      String
+    description      String    @db.VarChar(3000)
     name             String
     severity         severity
     tags             String
-    references       String //split by \n    
+    references       String    @db.VarChar(1000) //split by \n    
     queryTimestamp   DateTime? @default(now())
-    //If true, the finding is open in the UI for detail view  
 
     @@index([severity(sort: Desc)])
 }

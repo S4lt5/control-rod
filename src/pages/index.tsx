@@ -4,18 +4,19 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useState, useRef, useContext } from 'react';
 import { useSession } from 'next-auth/react';
-import { severity, type finding } from '~/shared/finding';
+
 import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
 
 import React from 'react';
 import moment from 'moment';
-import { disclosureStatus } from '~/shared/finding';
+
 import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { ScanInformationBlock } from '~/components/findings/scan-info-block';
 import { FixedSizeList, FixedSizeListProps } from 'react-window';
+import { Finding, disclosureStatus } from '@prisma/client';
 
 const Home: NextPage = () => {
   const [expanded, setExpanded] = useState('');
@@ -33,7 +34,7 @@ const Home: NextPage = () => {
 
       <div className="container flex flex-col items-center justify-center gap-12 px-2 py-16 ">
         <div className="flex h-full w-full flex-col text-white">
-          {findings && findings.some((f) => f.disclosure) && (
+          {findings && findings.some((f) => f['disclosure']) && (
             <div className="w-full justify-start">
               <input
                 type="checkbox"
@@ -59,7 +60,7 @@ const Home: NextPage = () => {
             <tbody>
               {findings &&
                 findings
-                  .filter((f: finding) => {
+                  .filter((f: Finding) => {
                     return !hideDisclosed || f.disclosure == null;
                   })
                   .map((f) => (
@@ -120,8 +121,8 @@ const Home: NextPage = () => {
                               <ul className="mt-4 flex grow flex-col">
                                 <li>
                                   Disclosure Status:{' '}
-                                  {f.disclosure
-                                    ? disclosureStatus[f.disclosure.status]
+                                  {f['disclosure']
+                                    ? disclosureStatus[f['disclosure'].status]
                                     : 'Not Started'}
                                 </li>
                                 <li>

@@ -2,16 +2,12 @@
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import { type SyntheticEvent, useState } from 'react';
-import {
-  createFindingFilterFn,
-  disclosure,
-  disclosureStatus,
-  type finding,
-} from '~/shared/finding';
 import { createCompareFn } from '~/shared/helpers';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 import { matchesMiddleware } from 'next/dist/shared/lib/router/router';
+import { Disclosure, Finding, disclosureStatus } from '@prisma/client';
+import { createFindingFilterFn } from '~/shared/finding';
 
 const NewDisclosure: NextPage = () => {
   const router = useRouter();
@@ -22,16 +18,18 @@ const NewDisclosure: NextPage = () => {
   const { data: disclosures, status: disclosureQueryStatus } =
     api.disclosures.getDisclosures.useQuery();
   const addDisclosure = api.disclosures.newDisclosure.useMutation();
+  const [newHosts, setNewHosts] = useState<string[]>([]);
   const [findingSearch, setFindingSearch] = useState(''); //used to filter the dropdown findings list
-  const [newDisclosure, setNewDisclosure] = useState<disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
-  function selectHost(e: SyntheticEvent, f: finding): void {
-    if (newDisclosure) {
+  const [newDisclosure, setNewDisclosure] = useState<Disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
+  function selectHost(e: SyntheticEvent, f: Finding): void {
+    if (newHosts) {
       //if it exists, remove it
-      if (newDisclosure.hosts.includes(f.host)) {
-        newDisclosure.hosts = newDisclosure.hosts.filter((h) => h != f.host);
+      if (newHosts.includes(f.host)) {
+        setNewHosts(newHosts.filter((h) => h != f.host));
       } else {
         // or add it
-        newDisclosure.hosts.push(f.host);
+        newHosts.push(f.host);
+        setNewHosts(newHosts);
       }
 
       setNewDisclosure({ ...newDisclosure });
@@ -45,16 +43,16 @@ const NewDisclosure: NextPage = () => {
       (f) => f.name == nd_name && f.host == nd_host
     );
     if (matchedFinding) {
-      const d: disclosure = new disclosure(
-        matchedFinding.name,
-        new Array<string>(matchedFinding.host),
-        matchedFinding.template,
-        disclosureStatus.disclosed,
-        '',
-        matchedFinding.description,
-        matchedFinding.severity,
-        matchedFinding.reference
-      );
+      const d: Disclosure = {
+        name: matchedFinding.name,
+        hosts: matchedFinding.host,
+        template: matchedFinding.template,
+        status: disclosureStatus.disclosed,
+        ticketURL: '',
+        description: matchedFinding.description,
+        severity: matchedFinding.severity,
+        references: matchedFinding.references,
+      };
       setNewDisclosure(d);
       setFindingSearch(d.name);
     }
@@ -101,11 +99,11 @@ const NewDisclosure: NextPage = () => {
                       {findings &&
                         disclosures &&
                         findings
-                          .filter((f: finding) => {
+                          .filter((f: Finding) => {
                             return !disclosures.some(
                               (d) =>
                                 d.name == f.name &&
-                                d.hosts.some((h) => h == f.host)
+                                newHosts.some((h) => h == f.host)
                             );
                           })
                           .filter(createFindingFilterFn(findingSearch))
@@ -120,16 +118,16 @@ const NewDisclosure: NextPage = () => {
                               <td>
                                 <button
                                   onClick={(e) => {
-                                    const d: disclosure = new disclosure(
-                                      f.name,
-                                      new Array<string>(f.host),
-                                      f.template,
-                                      disclosureStatus.disclosed,
-                                      '',
-                                      f.description,
-                                      f.severity,
-                                      f.reference
-                                    );
+                                    const d: Disclosure = {
+                                      name: f.name,
+                                      hosts: f.host,
+                                      template: f.template,
+                                      status: disclosureStatus.disclosed,
+                                      ticketURL: '',
+                                      description: f.description,
+                                      severity: f.severity,
+                                      references: f.references,
+                                    };
                                     setNewDisclosure(d);
                                     setFindingSearch(d.name);
                                     e.preventDefault(); // don't submit the form because we clicked here
@@ -209,14 +207,8 @@ const NewDisclosure: NextPage = () => {
                     {findings &&
                       disclosures &&
                       findings
-                        .filter(
-                          (f) =>
-                            !disclosures.some((d) =>
-                              d.hosts.some((dh) => dh == f.host)
-                            )
-                        )
+                        .filter((f) => !newHosts.some((dh) => dh == f.host))
                         .filter((f) => f.name == newDisclosure.name)
-
                         .map((f) => (
                           <tr
                             className=" border-b-2 border-gray-900 bg-slate-700 hover:bg-white/20"

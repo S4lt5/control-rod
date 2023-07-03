@@ -1,7 +1,7 @@
-import { type disclosure, disclosureStatus } from '~/shared/finding';
+import { Disclosure, disclosureStatus } from '@prisma/client';
 import { FC } from 'react';
 type props = {
-  disclosure?: disclosure;
+  disclosure?: Disclosure;
 };
 export const DisclosureStatusTag: React.FC<props> = ({ disclosure }) => {
   return (

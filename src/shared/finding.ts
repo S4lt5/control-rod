@@ -60,7 +60,7 @@ class findingWithExtras {
  * @param query
  * @returns
  */
-/*
+
 function createFindingFilterFn<T extends Finding>(query: string) {
   const filterFn = (f: FindingWithExtras) => {
     const lowerQuery = query.toLowerCase();
@@ -78,7 +78,7 @@ function createFindingFilterFn<T extends Finding>(query: string) {
   };
   return filterFn;
 }
-*/
+
 //slow findings store, e.g file based or AWS Athena or some other "long poll" source
 interface SlowFindingsStore {
   getFindings(): Promise<Finding[]>;
@@ -88,4 +88,5 @@ export {
   type SlowFindingsStore,
   findingWithExtras,
   ConvertNestedFindingToFinding,
+  createFindingFilterFn,
 };

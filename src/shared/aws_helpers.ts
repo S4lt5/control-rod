@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   AthenaClient,
   type StartQueryExecutionCommand,
@@ -28,18 +25,20 @@ export class AWSHelpers {
 
     const findings_array: Finding[] = records.map((r: { [x: string]: any }) => {
       return {
-        extractedResults: r['extracted-results'],
+        extractedResults: r['extracted-results'] ?? '',
         host: r['host'],
-
         description: r['description'],
         name: r['name'],
         severity: r['severity'],
         //forgive me my hacky sins -MG. convert 'almost json' to array of strings. Get rid of [] and split non-quoted elements into an array
-        tags: r['tags'].replace('[', '').replace(']', '').split(','),
-        reference: r['reference'].replace('[', '').replace(']', '').split(','),
-        'matched-at': r['matchedAt'],
+        tags:
+          r['tags'].replace('[', '').replace(']', '').replace(',', '\n') ?? '',
+        references:
+          r['reference'].replace('[', '').replace(']', '').replace(',', '\n') ??
+          '',
+        matchedAt: r['matchedAt'],
         template: r['template'],
-        timestamp: r['timestamp'],
+        timestamp: r['timestamp'] ?? '',
       };
     });
     return findings_array;
