@@ -3,23 +3,23 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { type disclosure, severity, disclosureStatus } from '~/shared/finding';
 import moment from 'moment';
 import { api } from '~/utils/api';
 import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
 import { SeverityLabel } from '~/components/findings/severity-label';
-function createFilterFn<T extends disclosure>(query: string) {
-  const filterFn = (d: disclosure) => {
+import { type Disclosure, disclosureStatus } from '@prisma/client';
+function createFilterFn<T extends Disclosure>(query: string) {
+  const filterFn = (d: Disclosure) => {
     const lowerQuery = query.toLowerCase();
     return (
       d.name.toLowerCase().includes(lowerQuery) ||
       d.description.toLowerCase().includes(lowerQuery) ||
       d.template.toLowerCase().includes(lowerQuery) ||
-      severity[d.severity].toLowerCase().includes(lowerQuery) ||
-      d.hosts.some((s) => s.toLowerCase().includes(lowerQuery)) ||
-      disclosureStatus[d.status].toLowerCase().includes(lowerQuery)
+      d.severity.toLowerCase().includes(lowerQuery) ||
+      d.hosts.includes(lowerQuery) ||
+      d.status.toLowerCase().includes(lowerQuery)
     );
   };
   return filterFn;
@@ -27,7 +27,7 @@ function createFilterFn<T extends disclosure>(query: string) {
 
 const Home: NextPage = () => {
   const [editing, setEditing] = useState(''); //if the user is editing the status
-  const [selectedStatusValue, setSelectedStatusValue] = useState(0); //what the user has selected in the 'status' dropdown
+  const [selectedStatusValue, setSelectedStatusValue] = useState('started'); //what the user has selected in the 'status' dropdown
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
   const {
@@ -82,7 +82,9 @@ const Home: NextPage = () => {
                         <td className="border border-y-0 border-l-0 border-gray-700 px-1">
                           <ul>
                             {d.hosts &&
-                              d.hosts.map((h) => <li key={h}>{h}</li>)}
+                              d.hosts
+                                .split('\n')
+                                .map((h) => <li key={h}>{h}</li>)}
                           </ul>
                         </td>
                         <td className="h-12 border border-y-0 border-l-0 border-gray-700 px-1">
@@ -123,7 +125,7 @@ const Home: NextPage = () => {
                                 <ul className="ml-10">
                                   {d &&
                                     d.references &&
-                                    d.references.map((ref) => (
+                                    d.references.split('\n').map((ref) => (
                                       <li className=" list-disc" key={ref}>
                                         <a
                                           className="text-slate-400  hover:underline"
@@ -142,7 +144,7 @@ const Home: NextPage = () => {
                                   <span>Status:</span>
                                   {editing != d.id && (
                                     <>
-                                      <span>{disclosureStatus[d.status]}</span>
+                                      <span>{d.status}</span>
                                       <span
                                         className="w-6 text-slate-400 hover:cursor-pointer"
                                         onClick={() => {
@@ -161,7 +163,7 @@ const Home: NextPage = () => {
                                         className="text-black"
                                         onChange={(e) => {
                                           setSelectedStatusValue(
-                                            Number(e.target.value.toString())
+                                            e.target.value
                                           );
                                         }}
                                       >
@@ -183,7 +185,8 @@ const Home: NextPage = () => {
                                               .mutateAsync({
                                                 id: d.id,
                                                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                                                status: selectedStatusValue,
+                                                status:
+                                                  selectedStatusValue as keyof typeof disclosureStatus,
                                               })
                                               .catch(() => {
                                                 console.log(

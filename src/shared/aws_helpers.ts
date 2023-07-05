@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   AthenaClient,
   type StartQueryExecutionCommand,
@@ -10,7 +7,8 @@ import {
 import { parse } from 'csv-parse/sync';
 
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { finding } from './finding';
+import { Finding } from '@prisma/client';
+
 //how long we will keep checking the query before giving up.
 const MAX_ATHENA_RETRIES = 100;
 const ATHENA_DELAY_MS = 200;
@@ -19,31 +17,29 @@ const athenaClient = new AthenaClient({ region: 'us-east-1' });
 const s3Client = new S3Client({ region: 'us-east-1' });
 
 export class AWSHelpers {
-  public static ReadCSVFindings(csvBody: string): finding[] {
+  public static ReadCSVFindings(csvBody: string): Finding[] {
     const records = parse(csvBody, {
       delimiter: ',',
       columns: true,
     });
 
-    const findings_array: finding[] = records.map((r: string) => {
-      return new finding({
-        extractedResults: r['extracted-results'],
+    const findings_array: Finding[] = records.map((r: { [x: string]: any }) => {
+      return {
+        extractedResults: r['extracted-results'] ?? '',
         host: r['host'],
-        info: {
-          description: r['description'],
-          name: r['name'],
-          severity: r['severity'],
-          //forgive me my hacky sins -MG. convert 'almost json' to array of strings. Get rid of [] and split non-quoted elements into an array
-          tags: r['tags'].replace('[', '').replace(']', '').split(','),
-          reference: r['reference']
-            .replace('[', '')
-            .replace(']', '')
-            .split(','),
-        },
-        'matched-at': r['matchedAt'],
+        description: r['description'],
+        name: r['name'],
+        severity: r['severity'],
+        //forgive me my hacky sins -MG. convert 'almost json' to array of strings. Get rid of [] and split non-quoted elements into an array
+        tags:
+          r['tags'].replace('[', '').replace(']', '').replace(',', '\n') ?? '',
+        references:
+          r['reference'].replace('[', '').replace(']', '').replace(',', '\n') ??
+          '',
+        matchedAt: r['matchedAt'],
         template: r['template'],
-        timestamp: r['timestamp'],
-      });
+        timestamp: r['timestamp'] ?? '',
+      };
     });
     return findings_array;
   }

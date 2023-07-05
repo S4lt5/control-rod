@@ -2,23 +2,17 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "mysql"
     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
-}
-
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
 }
 
 // Necessary for Next auth
@@ -64,4 +58,63 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Disclosure {
+    id          String              @id @default(cuid())
+    name        String
+    hosts       String //split by \n
+    template    String
+    timestamp   DateTime            @default(now())
+    status      disclosureStatus    @default(started)
+    ticketURL   String
+    history     DisclosureHistory[]
+    description String              @db.VarChar(3000)
+    severity    severity
+    references  String              @db.VarChar(1000) // split by \n
+}
+
+model DisclosureHistory {
+    id        String           @id @default(cuid())
+    timestamp DateTime         @default(now())
+    status    disclosureStatus
+
+    Disclosure   Disclosure? @relation(fields: [disclosureId], references: [id])
+    disclosureId String?
+}
+
+enum disclosureStatus {
+    started
+    disclosed
+    regression
+    uncertain
+    remediated
+    invalid
+    deleted
+}
+
+enum severity {
+    info
+    low
+    medium
+    unknown
+    high
+    critical
+}
+
+model Finding {
+    id               String    @id @default(cuid())
+    extractedResults String    @db.VarChar(500)
+    host             String
+    matchedAt        String    @db.VarChar(1000)
+    template         String
+    timestamp        String
+    description      String    @db.VarChar(3000)
+    name             String
+    severity         severity
+    tags             String
+    references       String    @db.VarChar(1000) //split by \n    
+    queryTimestamp   DateTime? @default(now())    
+    disclosureStatus String?   //not actually saved/used -- used to store at runtime cross referenced disclosures by loose key (host in hosts, name == name)
+    @@index([severity(sort: Desc)])
 }

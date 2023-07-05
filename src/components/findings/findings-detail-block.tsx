@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { finding } from '~/shared/finding';
 import { SeverityLabel } from './severity-label';
+import { Finding } from '@prisma/client';
 type props = {
-  finding: finding;
+  finding: Finding;
 };
 export const FindingsDetailBlock: React.FC<props> = ({ finding }) => {
   return (
@@ -17,8 +17,8 @@ export const FindingsDetailBlock: React.FC<props> = ({ finding }) => {
         <p>References</p>
         <ul className="ml-10">
           {finding &&
-            finding.reference &&
-            finding.reference.map((ref) => (
+            finding.references &&
+            finding.references.split('\n').map((ref) => (
               <li className=" list-disc" key={ref}>
                 <a className="text-slate-400  hover:underline" href={ref}>
                   {ref}

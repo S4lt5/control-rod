@@ -1,5 +1,5 @@
+import { severity } from '@prisma/client';
 import { FC } from 'react';
-import { severity } from '~/shared/finding';
 
 type props = {
   sval: severity | undefined;
