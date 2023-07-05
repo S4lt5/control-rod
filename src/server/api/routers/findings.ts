@@ -12,7 +12,7 @@ import { Finding, severity } from '@prisma/client';
 //We'll check each time we pull from fastFindingStore to see if the data is stale, and if so we'll update it in place
 
 let slowFindingsStore: SlowFindingsStore;
-if (process.env.USE_AWS_DATA_SOURCES == 'true') {
+if (process.env.USE_ATHENA_DATA_SOURCE == 'true') {
   slowFindingsStore = new AwsFindingStore();
 } else if (process.env.USE_LOCAL_ATEHNA_CSV_SOURCE == 'true') {
   //we're using a local findings.csv export from athena
