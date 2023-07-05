@@ -72,6 +72,7 @@ model Disclosure {
     description String              @db.VarChar(3000)
     severity    severity
     references  String              @db.VarChar(1000) // split by \n
+    notes       String              @default("") @db.VarChar(4000) //roughly 2 pages of text? 
 }
 
 model DisclosureHistory {

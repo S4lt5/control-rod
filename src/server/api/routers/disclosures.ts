@@ -10,6 +10,8 @@ export const disclosuresRouter = createTRPCRouter({
       z.object({
         id: z.string().nonempty(),
         status: z.nativeEnum(disclosureStatus),
+        ticketURL: z.string(),
+        notes: z.string(),
       })
     )
     .mutation(async ({ ctx, input }): Promise<boolean> => {
@@ -19,6 +21,8 @@ export const disclosuresRouter = createTRPCRouter({
         },
         data: {
           status: input.status,
+          ticketURL: input.ticketURL,
+          notes: input.notes,
         },
       });
       return true;

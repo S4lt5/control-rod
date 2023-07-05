@@ -25,6 +25,7 @@
     "csv-stringify": "^6.4.0",
     "docxtemplater": "^3.37.9",
     "jotai": "^2.1.0",
+    "md-editor-rt": "^4.2.1",
     "moment": "^2.29.4",
     "next": "^13.4.1",
     "next-auth": "^4.21.0",
