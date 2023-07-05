@@ -55,6 +55,7 @@ const NewDisclosure: NextPage = () => {
         severity: matchedFinding.severity,
         references: matchedFinding.references,
       };
+      setNewHosts([matchedFinding.host]);
       setNewDisclosure(d);
       setFindingSearch(d.name);
     }
@@ -128,6 +129,7 @@ const NewDisclosure: NextPage = () => {
                                       severity: f.severity,
                                       references: f.references,
                                     };
+                                    setNewHosts([f.host]);
                                     setNewDisclosure(d);
                                     setFindingSearch(d.name);
                                     e.preventDefault(); // don't submit the form because we clicked here
