@@ -10,6 +10,7 @@ import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { type Disclosure, disclosureStatus } from '@prisma/client';
+import { stringify } from 'csv-stringify/sync';
 function createFilterFn<T extends Disclosure>(query: string) {
   const filterFn = (d: Disclosure) => {
     const lowerQuery = query.toLowerCase();
@@ -39,6 +40,20 @@ const Home: NextPage = () => {
     api.disclosures.generateDisclosureTemplate.useMutation();
   const updateDisclosureStatus =
     api.disclosures.updateDisclosureStatus.useMutation();
+
+  const generateCSV = () => {
+    if (disclosures) {
+      const csvData = stringify(disclosures, { header: true });
+      const mediaType = 'data:text/csv;base64,';
+
+      window.location.href = `${mediaType}${Buffer.from(csvData).toString(
+        'base64'
+      )}`;
+    } else {
+      return 'ERROR, Findings not available.';
+    }
+  };
+
   return (
     <>
       <Head>
@@ -52,7 +67,22 @@ const Home: NextPage = () => {
           <table className="table-auto">
             <thead className="borderb border-collapse border-gray-600 bg-white/10">
               <tr className="border border-gray-600">
-                <th className="border border-gray-600">Finding</th>
+                <th className="border border-gray-600">
+                  <div
+                    className="hover:cursor-pointer"
+                    onClick={(e) => {
+                      generateCSV();
+                      e.preventDefault();
+                    }}
+                  >
+                    <img
+                      alt="export CSV"
+                      className="float-left h-6"
+                      src="/csv.png"
+                    ></img>
+                  </div>
+                  Finding
+                </th>
                 <th className="border border-gray-600">Status</th>
                 <th className="border border-gray-600">Hosts</th>
 

@@ -63,7 +63,7 @@ model VerificationToken {
 model Disclosure {
     id          String              @id @default(cuid())
     name        String
-    hosts       String //split by \n
+    hosts       String              @db.VarChar(1000) //split by \n
     template    String
     timestamp   DateTime            @default(now())
     status      disclosureStatus    @default(started)
@@ -114,7 +114,8 @@ model Finding {
     severity         severity
     tags             String
     references       String    @db.VarChar(1000) //split by \n    
-    queryTimestamp   DateTime? @default(now())    
-    disclosureStatus String?   //not actually saved/used -- used to store at runtime cross referenced disclosures by loose key (host in hosts, name == name)
+    queryTimestamp   DateTime? @default(now())
+    disclosureStatus String? //not actually saved/used -- used to store at runtime cross referenced disclosures by loose key (host in hosts, name == name)
+
     @@index([severity(sort: Desc)])
 }

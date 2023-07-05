@@ -4,7 +4,7 @@ import { FileFindingsStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
 import { z } from 'zod';
-import { type Finding, severity } from '@prisma/client';
+import { type Finding } from '@prisma/client';
 
 //We'll check each time we pull from fastFindingStore to see if the data is stale, and if so we'll update it in place
 //from the long data source defined here
@@ -28,6 +28,7 @@ export const findingsRouter = createTRPCRouter({
         .object({
           search: z.string().nullish(),
           forceRefresh: z.boolean().nullish(),
+          hideDisclosed: z.boolean().nullish(),
         })
         .nullish()
     )
@@ -162,6 +163,9 @@ export const findingsRouter = createTRPCRouter({
         f.disclosureStatus =
           disclosures.find((d) => d.name === f.name && d.hosts.includes(f.host))
             ?.status ?? null;
+      }
+      if (input?.hideDisclosed) {
+        findings = findings.filter((f) => !f.disclosureStatus);
       }
       return findings;
     }),
