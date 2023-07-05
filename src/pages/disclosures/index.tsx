@@ -17,9 +17,9 @@ function createFilterFn<T extends Disclosure>(query: string) {
       d.name.toLowerCase().includes(lowerQuery) ||
       d.description.toLowerCase().includes(lowerQuery) ||
       d.template.toLowerCase().includes(lowerQuery) ||
-      //severity[d.severity].toLowerCase().includes(lowerQuery) ||
-      d.hosts.includes(lowerQuery)
-      //disclosureStatus[d.status].toLowerCase().includes(lowerQuery)
+      d.severity.toLowerCase().includes(lowerQuery) ||
+      d.hosts.includes(lowerQuery) ||
+      d.status.toLowerCase().includes(lowerQuery)
     );
   };
   return filterFn;

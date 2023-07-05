@@ -1,24 +1,21 @@
-import { SlowFindingsStore } from '~/shared/finding';
+import { type SlowFindingsStore } from '~/shared/finding';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { FileFindingsStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
 import { z } from 'zod';
-import { Finding, severity } from '@prisma/client';
+import { type Finding, severity } from '@prisma/client';
 
-//const fileStore = new AwsFindingStore();
-
-//If fastFindingsStore exists, we will long-poll from fileStore, and then save things back into fastFindingStore.
 //We'll check each time we pull from fastFindingStore to see if the data is stale, and if so we'll update it in place
-
+//from the long data source defined here
 let slowFindingsStore: SlowFindingsStore;
-if (process.env.USE_ATHENA_DATA_SOURCE == 'true') {
+if (process.env.LONG_DATA_SOURCE == 'athena') {
   slowFindingsStore = new AwsFindingStore();
-} else if (process.env.USE_LOCAL_ATEHNA_CSV_SOURCE == 'true') {
+} else if (process.env.LONG_DATA_SOURCE == 'csv') {
   //we're using a local findings.csv export from athena
   slowFindingsStore = new AthenaCSVFileStore();
 } else {
-  //We're running in dev mode, or standalone
+  // use a nuclei JSON output
   slowFindingsStore = new FileFindingsStore();
 }
 const FINDING_CACHE_MILLISECONDS = 30 * 60 * 1000; //how many seconds should we hold on to "fast" cache, default 60 minutes

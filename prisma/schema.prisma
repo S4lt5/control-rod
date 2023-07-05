@@ -66,7 +66,7 @@ model Disclosure {
     hosts       String //split by \n
     template    String
     timestamp   DateTime            @default(now())
-    status      disclosureStatus
+    status      disclosureStatus    @default(started)
     ticketURL   String
     history     DisclosureHistory[]
     description String              @db.VarChar(3000)

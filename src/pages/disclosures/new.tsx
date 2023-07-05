@@ -5,11 +5,7 @@ import { type SyntheticEvent, useState } from 'react';
 import { createCompareFn } from '~/shared/helpers';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
-import {
-  type Disclosure,
-  type Finding,
-  disclosureStatus,
-} from '@prisma/client';
+import { type Finding } from '@prisma/client';
 import { createFindingFilterFn } from '~/shared/finding';
 
 const NewDisclosure: NextPage = () => {
@@ -23,7 +19,12 @@ const NewDisclosure: NextPage = () => {
   const addDisclosure = api.disclosures.newDisclosure.useMutation();
   const [newHosts, setNewHosts] = useState<string[]>([]);
   const [findingSearch, setFindingSearch] = useState(''); //used to filter the dropdown findings list
-  const [newDisclosure, setNewDisclosure] = useState<Disclosure | null>(null); //the disclosure that is being created. if null, prompts for a finding to start
+  //infer type from server method
+  type newDisclosureType = typeof addDisclosure.variables;
+
+  const [newDisclosure, setNewDisclosure] = useState<newDisclosureType | null>(
+    null
+  ); //the disclosure that is being created. if null, prompts for a finding to start
   function selectHost(e: SyntheticEvent, f: Finding): void {
     if (newHosts) {
       //if it exists, remove it
@@ -35,7 +36,7 @@ const NewDisclosure: NextPage = () => {
         setNewHosts(newHosts);
       }
 
-      setNewDisclosure({ ...newDisclosure });
+      setNewDisclosure(newDisclosure);
     }
     e.preventDefault();
   }
@@ -46,12 +47,10 @@ const NewDisclosure: NextPage = () => {
       (f) => f.name == nd_name && f.host == nd_host
     );
     if (matchedFinding) {
-      const d: Disclosure = {
+      const d: newDisclosureType = {
         name: matchedFinding.name,
         hosts: matchedFinding.host,
         template: matchedFinding.template,
-        status: disclosureStatus.disclosed,
-        ticketURL: '',
         description: matchedFinding.description,
         severity: matchedFinding.severity,
         references: matchedFinding.references,
@@ -121,12 +120,10 @@ const NewDisclosure: NextPage = () => {
                               <td>
                                 <button
                                   onClick={(e) => {
-                                    const d: Disclosure = {
+                                    const d: newDisclosureType = {
                                       name: f.name,
                                       hosts: f.host,
                                       template: f.template,
-                                      status: disclosureStatus.disclosed,
-                                      ticketURL: '',
                                       description: f.description,
                                       severity: f.severity,
                                       references: f.references,
@@ -287,6 +284,7 @@ const NewDisclosure: NextPage = () => {
                   throw new Error('foo');
                 }
                 void addDisclosure
+
                   .mutateAsync({
                     name: newDisclosure.name,
                     description: newDisclosure.description,
