@@ -18,6 +18,7 @@ if (process.env.LONG_DATA_SOURCE == 'athena') {
   // use a nuclei JSON output
   slowFindingsStore = new FileFindingsStore();
 }
+
 const FINDING_CACHE_MILLISECONDS = 30 * 60 * 1000; //how many seconds should we hold on to "fast" cache, default 60 minutes
 
 export const findingsRouter = createTRPCRouter({
@@ -28,7 +29,7 @@ export const findingsRouter = createTRPCRouter({
 
       //pick a finding off the prisma DB, to check it's age
       const ArbitraryFastFinding = await ctx.prisma.finding.findFirst();
-
+      const lenFindings = await ctx.prisma.finding.count();
       const thirtyMinutesAgo = new Date(
         new Date().getTime() - FINDING_CACHE_MILLISECONDS
       );
@@ -36,11 +37,12 @@ export const findingsRouter = createTRPCRouter({
 
       // to clarify below:
       //  if I dont have findings
-      //  or my length is 0
+      //  or my length < 2 ( len = 1 is often an error condition)
       //  or my I'm missing cache timestamp
       //  or my cache is stale
       //  then I need to invalidate the cache
       if (
+        lenFindings < 2 ||
         !ArbitraryFastFinding ||
         !ArbitraryFastFinding?.queryTimestamp ||
         ArbitraryFastFinding?.queryTimestamp < thirtyMinutesAgo
@@ -63,32 +65,56 @@ export const findingsRouter = createTRPCRouter({
         Object.values(severity).forEach((v) => {
           console.debug(v);
         });
-
         findings = await ctx.prisma.finding.findMany({
           orderBy: {
             severity: 'desc',
           },
           where: {
-            OR: [
+            AND: [
               {
-                name: {
-                  contains: input.search,
+                NOT: {
+                  template: {
+                    contains: 'dns/',
+                  },
                 },
               },
               {
-                host: {
-                  contains: input.search,
+                NOT: {
+                  template: {
+                    contains: 'ssl/',
+                  },
                 },
               },
               {
-                description: {
-                  contains: input.search,
+                NOT: {
+                  name: {
+                    contains: 'Weak Cipher Suites',
+                  },
                 },
               },
               {
-                template: {
-                  contains: input.search,
-                },
+                OR: [
+                  {
+                    name: {
+                      contains: input.search,
+                    },
+                  },
+                  {
+                    host: {
+                      contains: input.search,
+                    },
+                  },
+                  {
+                    description: {
+                      contains: input.search,
+                    },
+                  },
+                  {
+                    template: {
+                      contains: input.search,
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -97,6 +123,31 @@ export const findingsRouter = createTRPCRouter({
         findings = await ctx.prisma.finding.findMany({
           orderBy: {
             severity: 'desc',
+          },
+          where: {
+            AND: [
+              {
+                NOT: {
+                  template: {
+                    contains: 'dns/',
+                  },
+                },
+              },
+              {
+                NOT: {
+                  template: {
+                    contains: 'ssl/',
+                  },
+                },
+              },
+              {
+                NOT: {
+                  name: {
+                    contains: 'Weak Cipher Suites',
+                  },
+                },
+              },
+            ],
           },
         });
       }

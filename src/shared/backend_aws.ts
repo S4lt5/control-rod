@@ -64,7 +64,7 @@ export class AwsFindingStore implements SlowFindingsStore {
         {
           id: 'an-id',
           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          name: `There was a problem reading the findings data. ${err}`,
+          name: `There was a problem reading the Athena findings data. ${err}`,
           description: '',
           references: '',
           severity: severity.info,
@@ -75,6 +75,7 @@ export class AwsFindingStore implements SlowFindingsStore {
           template: '',
           timestamp: '',
           queryTimestamp: new Date(),
+          disclosureStatus: '',
         },
       ];
     }

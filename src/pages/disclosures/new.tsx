@@ -33,10 +33,10 @@ const NewDisclosure: NextPage = () => {
       } else {
         // or add it
         newHosts.push(f.host);
-        setNewHosts(newHosts);
+        setNewHosts(newHosts.slice(0));
       }
 
-      setNewDisclosure(newDisclosure);
+      //setNewDisclosure(newDisclosure);
     }
     e.preventDefault();
   }
@@ -245,16 +245,18 @@ const NewDisclosure: NextPage = () => {
                             className=" border-b-2 border-gray-900 bg-slate-700 hover:bg-white/20"
                             key={f.id}
                             onClick={(e) => {
+                              console.log(`I selected host`, f);
                               selectHost(e, f);
                             }}
                           >
                             <td className="shrink">
+                              [{f.host}]w{' '}
+                              {newHosts.includes(f.host) == true && 'wat'}
                               <img
                                 alt="select/deselect"
                                 className="h-6 w-6"
                                 src={
-                                  newDisclosure.hosts &&
-                                  newDisclosure.hosts.includes(f.host)
+                                  newHosts && newHosts.includes(f.host)
                                     ? '/cb-checked.svg'
                                     : '/cb-empty.svg'
                                 }
@@ -292,9 +294,6 @@ const NewDisclosure: NextPage = () => {
                     severity: newDisclosure.severity,
                     references: newDisclosure.references ?? '',
                     template: newDisclosure.template,
-                  })
-                  .catch(() => {
-                    console.log('oh noes');
                   })
                   .then(() => {
                     void router

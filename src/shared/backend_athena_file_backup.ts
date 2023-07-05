@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import path from 'path';
 import { promises as fs } from 'fs';
-import { TRPCError } from '@trpc/server';
-import { TemplateGenerator } from './disclosure_template_generator';
 import { AWSHelpers } from './aws_helpers';
-import { SlowFindingsStore } from './finding';
-import { Finding, severity } from '@prisma/client';
+import { type SlowFindingsStore } from './finding';
+import { type Finding, severity } from '@prisma/client';
 
-const dataDirectory: string = path.join(process.cwd(), 'data');
 /*
 Similar to AWS Store, but reads an athena CSV File backup for easy pull to offline database
 */
@@ -21,11 +18,12 @@ export class AthenaCSVFileStore implements SlowFindingsStore {
       //convert csv into findings
       const records = AWSHelpers.ReadCSVFindings(data);
       return records;
-    } catch {
+    } catch (err) {
       return [
         {
           id: 'an-id',
-          name: 'There was a problem reading the findings data.',
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          name: `There was a problem reading the CSV findings data. ${err}`,
           description: '',
           references: '',
           severity: severity.info,
@@ -36,6 +34,7 @@ export class AthenaCSVFileStore implements SlowFindingsStore {
           template: '',
           timestamp: '',
           queryTimestamp: null,
+          disclosureStatus: '',
         },
       ];
     }

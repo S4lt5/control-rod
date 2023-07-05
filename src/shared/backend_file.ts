@@ -3,14 +3,10 @@ import path from 'path';
 import { promises as fs } from 'fs';
 import {
   type nestedFinding,
-  SlowFindingsStore,
+  type SlowFindingsStore,
   ConvertNestedFindingToFinding,
 } from './finding';
-import { TRPCError } from '@trpc/server';
-import { TemplateGenerator } from './disclosure_template_generator';
-import { Finding, severity } from '@prisma/client';
-
-const dataDirectory: string = path.join(process.cwd(), 'data');
+import { type Finding, severity } from '@prisma/client';
 
 export class FileFindingsStore implements SlowFindingsStore {
   async getFindings(): Promise<Finding[]> {
@@ -26,11 +22,12 @@ export class FileFindingsStore implements SlowFindingsStore {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return flat_findings;
-    } catch {
+    } catch (err) {
       return [
         {
           id: 'an-id',
-          name: 'There was a problem reading the findings data.',
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          name: `There was a problem reading the JSON findings data. ${err} `,
           description: '',
           references: '',
           severity: severity.info,
@@ -41,6 +38,7 @@ export class FileFindingsStore implements SlowFindingsStore {
           template: '',
           timestamp: '',
           queryTimestamp: null,
+          disclosureStatus: '',
         },
       ];
     }
