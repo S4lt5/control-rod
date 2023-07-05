@@ -238,6 +238,10 @@ const NewDisclosure: NextPage = () => {
                     {findings &&
                       disclosures &&
                       findings
+                        .filter(
+                          (f) =>
+                            !disclosures.some((d) => d.hosts.includes(f.host))
+                        )
                         .filter((f) => f.name == newDisclosure.name)
                         .map((f) => (
                           <tr
@@ -287,7 +291,7 @@ const NewDisclosure: NextPage = () => {
                   .mutateAsync({
                     name: newDisclosure.name,
                     description: newDisclosure.description,
-                    hosts: newDisclosure.hosts,
+                    hosts: newHosts.join('\n'),
                     severity: newDisclosure.severity,
                     references: newDisclosure.references ?? '',
                     template: newDisclosure.template,
