@@ -43,3 +43,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 docker-compose.yml
+mysql_data

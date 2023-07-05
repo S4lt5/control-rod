@@ -1,12 +1,10 @@
 import { SlowFindingsStore } from '~/shared/finding';
-import { createCompareFn } from '~/shared/helpers';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { FileFindingsStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
 import { z } from 'zod';
 import { Finding, severity } from '@prisma/client';
-import { prisma } from '~/server/db';
 
 //const fileStore = new AwsFindingStore();
 
@@ -28,12 +26,11 @@ const FINDING_CACHE_MILLISECONDS = 30 * 60 * 1000; //how many seconds should we 
 export const findingsRouter = createTRPCRouter({
   getFindings: protectedProcedure
     .input(z.object({ search: z.string().nullish() }).nullish())
-    .query(async (opts): Promise<Finding[]> => {
+    .query(async ({ ctx, input }): Promise<Finding[]> => {
       let findings: Finding[] = [];
 
       //pick a finding off the prisma DB, to check it's age
-      const ArbitraryFastFinding: Finding | null =
-        await prisma.finding.findFirst();
+      const ArbitraryFastFinding = await ctx.prisma.finding.findFirst();
 
       const thirtyMinutesAgo = new Date(
         new Date().getTime() - FINDING_CACHE_MILLISECONDS
@@ -56,48 +53,48 @@ export const findingsRouter = createTRPCRouter({
         //get from the long findings store, clear the findings store, and insert new values
         const slowFindings = await slowFindingsStore.getFindings();
         //clear old findings,
-        await prisma.finding.deleteMany();
+        await ctx.prisma.finding.deleteMany();
         //insert new findings
-        await prisma.finding.createMany({ data: slowFindings });
+        await ctx.prisma.finding.createMany({ data: slowFindings });
       }
 
-      const disclosures = await prisma.disclosure.findMany();
+      const disclosures = await ctx.prisma.disclosure.findMany();
 
       //perform filter before returning to client, if one was provided
-      if (opts && opts.input && opts.input.search) {
+      if (input && input.search) {
         //convert input into a severity into a criticality
         Object.values(severity).forEach((v) => {
           console.debug(v);
         });
 
-        findings = await prisma.finding.findMany({
+        findings = await ctx.prisma.finding.findMany({
           where: {
             OR: [
               {
                 name: {
-                  contains: opts.input.search,
+                  contains: input.search,
                 },
               },
               {
                 host: {
-                  contains: opts.input.search,
+                  contains: input.search,
                 },
               },
               {
                 description: {
-                  contains: opts.input.search,
+                  contains: input.search,
                 },
               },
               {
                 template: {
-                  contains: opts.input.search,
+                  contains: input.search,
                 },
               },
             ],
           },
         });
       } else {
-        findings = await prisma.finding.findMany({
+        findings = await ctx.prisma.finding.findMany({
           orderBy: {
             severity: 'desc',
           },
