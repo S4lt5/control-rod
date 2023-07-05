@@ -1,7 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
-import { Disclosure, disclosureStatus, severity } from '@prisma/client';
-import { prisma } from '~/server/db';
+import { type Disclosure, disclosureStatus, severity } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { TemplateGenerator } from '~/shared/disclosure_template_generator';
 
@@ -13,9 +12,8 @@ export const disclosuresRouter = createTRPCRouter({
         status: z.nativeEnum(disclosureStatus),
       })
     )
-    .mutation(async (opts): Promise<boolean> => {
-      const { input } = opts;
-      await prisma.disclosure.update({
+    .mutation(async ({ ctx, input }): Promise<boolean> => {
+      await ctx.prisma.disclosure.update({
         where: {
           id: input.id,
         },
@@ -36,9 +34,8 @@ export const disclosuresRouter = createTRPCRouter({
         description: z.string().nonempty(),
       })
     )
-    .mutation(async (opts) => {
-      const { input } = opts;
-      await prisma.disclosure.create({
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.disclosure.create({
         data: {
           name: input.name,
           hosts: input.hosts,
@@ -51,14 +48,15 @@ export const disclosuresRouter = createTRPCRouter({
         },
       });
     }),
-  getDisclosures: protectedProcedure.query(async (): Promise<Disclosure[]> => {
-    return await prisma.disclosure.findMany();
-  }),
+  getDisclosures: protectedProcedure.query(
+    async ({ ctx }): Promise<Disclosure[]> => {
+      return await ctx.prisma.disclosure.findMany();
+    }
+  ),
   generateDisclosureTemplate: protectedProcedure
     .input(z.string())
-    .mutation(async (opts): Promise<string> => {
-      const { input } = opts;
-      const foundDisclosure = await prisma.disclosure.findFirst({
+    .mutation(async ({ ctx, input }): Promise<string> => {
+      const foundDisclosure = await ctx.prisma.disclosure.findFirst({
         where: { id: input },
       });
 
