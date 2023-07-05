@@ -238,7 +238,6 @@ const NewDisclosure: NextPage = () => {
                     {findings &&
                       disclosures &&
                       findings
-                        .filter((f) => !newHosts.some((dh) => dh == f.host))
                         .filter((f) => f.name == newDisclosure.name)
                         .map((f) => (
                           <tr
@@ -250,8 +249,6 @@ const NewDisclosure: NextPage = () => {
                             }}
                           >
                             <td className="shrink">
-                              [{f.host}]w{' '}
-                              {newHosts.includes(f.host) == true && 'wat'}
                               <img
                                 alt="select/deselect"
                                 className="h-6 w-6"

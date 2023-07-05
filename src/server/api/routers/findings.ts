@@ -23,7 +23,14 @@ const FINDING_CACHE_MILLISECONDS = 30 * 60 * 1000; //how many seconds should we 
 
 export const findingsRouter = createTRPCRouter({
   getFindings: protectedProcedure
-    .input(z.object({ search: z.string().nullish() }).nullish())
+    .input(
+      z
+        .object({
+          search: z.string().nullish(),
+          forceRefresh: z.boolean().nullish(),
+        })
+        .nullish()
+    )
     .query(async ({ ctx, input }): Promise<Finding[]> => {
       let findings: Finding[] = [];
 
@@ -42,6 +49,7 @@ export const findingsRouter = createTRPCRouter({
       //  or my cache is stale
       //  then I need to invalidate the cache
       if (
+        input?.forceRefresh ||
         lenFindings < 2 ||
         !ArbitraryFastFinding ||
         !ArbitraryFastFinding?.queryTimestamp ||
@@ -61,10 +69,6 @@ export const findingsRouter = createTRPCRouter({
 
       //perform filter before returning to client, if one was provided
       if (input && input.search) {
-        //convert input into a severity into a criticality
-        Object.values(severity).forEach((v) => {
-          console.debug(v);
-        });
         findings = await ctx.prisma.finding.findMany({
           orderBy: {
             severity: 'desc',
