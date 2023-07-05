@@ -65,6 +65,9 @@ export const findingsRouter = createTRPCRouter({
         });
 
         findings = await ctx.prisma.finding.findMany({
+          orderBy: {
+            severity: 'desc',
+          },
           where: {
             OR: [
               {
