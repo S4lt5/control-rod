@@ -28,6 +28,7 @@ export const findingsRouter = createTRPCRouter({
         .object({
           search: z.string().nullish(),
           forceRefresh: z.boolean().nullish(),
+          hideDisclosed: z.boolean().nullish(),
         })
         .nullish()
     )
@@ -162,6 +163,9 @@ export const findingsRouter = createTRPCRouter({
         f.disclosureStatus =
           disclosures.find((d) => d.name === f.name && d.hosts.includes(f.host))
             ?.status ?? null;
+      }
+      if (input?.hideDisclosed) {
+        findings = findings.filter((f) => !f.disclosureStatus);
       }
       return findings;
     }),
