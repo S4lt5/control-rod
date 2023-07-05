@@ -10,8 +10,7 @@ import React from 'react';
 import { FindingsDetailBlock } from '~/components/findings/findings-detail-block';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { ScanInformationBlock } from '~/components/findings/scan-info-block';
-import { type Finding } from '@prisma/client';
-
+import { stringify } from 'csv-stringify/sync';
 const Home: NextPage = () => {
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
@@ -21,6 +20,20 @@ const Home: NextPage = () => {
       search: search,
       hideDisclosed: hideDisclosed,
     });
+
+  const generateCSV = () => {
+    if (findings) {
+      const csvData = stringify(findings, { header: true });
+      const mediaType = 'data:text/csv;base64,';
+
+      window.location.href = `${mediaType}${Buffer.from(csvData).toString(
+        'base64'
+      )}`;
+    } else {
+      return 'ERROR, Findings not available.';
+    }
+  };
+
   return (
     <>
       <Head>
@@ -47,7 +60,10 @@ const Home: NextPage = () => {
                 <th className="border border-gray-600">
                   <div
                     className="hover:cursor-pointer"
-                    onClick={console.log('broo')}
+                    onClick={(e) => {
+                      generateCSV();
+                      e.preventDefault();
+                    }}
                   >
                     <img
                       alt="export CSV"
