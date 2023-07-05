@@ -114,7 +114,7 @@ model Finding {
     severity         severity
     tags             String
     references       String    @db.VarChar(1000) //split by \n    
-    queryTimestamp   DateTime? @default(now())
-
+    queryTimestamp   DateTime? @default(now())    
+    disclosureStatus String?   //not actually saved/used -- used to store at runtime cross referenced disclosures by loose key (host in hosts, name == name)
     @@index([severity(sort: Desc)])
 }

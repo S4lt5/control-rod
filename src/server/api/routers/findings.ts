@@ -104,9 +104,9 @@ export const findingsRouter = createTRPCRouter({
       for (const f of findings) {
         //find a disclosure with the same name, and a matching host
         //monkey patch disclosure in there...
-        f['disclosure'] = disclosures.find(
-          (d) => d.name === f.name && d.hosts.includes(f.host)
-        );
+        f.disclosureStatus =
+          disclosures.find((d) => d.name === f.name && d.hosts.includes(f.host))
+            ?.status ?? null;
       }
       return findings;
     }),

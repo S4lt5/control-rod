@@ -19,7 +19,7 @@ After setting up auth, make sure you run `npx prisma db push` on a fresh install
 If you are deploying to an instance with [Nuclear Pond's Terraform Module](https://github.com/DevSecOpsDocs/terraform-nuclear-pond) deployed, set the following in your .env:
 
 ```
-USE_AWS_DATA_SOURCES="true"
+USE_ATHENA_DATA_SOURCE="true"
 AWS_BUCKET_NAME=nuclearpond-instance-name-artifacts
 ```
 
@@ -27,7 +27,7 @@ And specify your artifacts bucket name in the AWS_BUCKET_NAME value.
 
 ## Local File Based / Developer Mode
 
-If you are NOT deploying to a cloud environment, or do not wish to use s3/athena, leave the USE_AWS_DATA_SOURCES value unset.
+If you are NOT deploying to a cloud environment, or do not wish to use s3/athena, leave the USE_ATHENA_DATA_SOURCE value to false.
 
 Copy a result JSON output file from nuclei into ./data/findings.json (You may need to wrap the JSONLines output into an array to make it a proper JSON file)
 

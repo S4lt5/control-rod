@@ -9,7 +9,7 @@ import { useAtom } from 'jotai';
 import { atomSearch } from '~/shared/atoms';
 import { createCompareFn } from '~/shared/helpers';
 import { SeverityLabel } from '~/components/findings/severity-label';
-import { Disclosure, disclosureStatus, severity } from '@prisma/client';
+import { type Disclosure, disclosureStatus } from '@prisma/client';
 function createFilterFn<T extends Disclosure>(query: string) {
   const filterFn = (d: Disclosure) => {
     const lowerQuery = query.toLowerCase();
@@ -27,8 +27,7 @@ function createFilterFn<T extends Disclosure>(query: string) {
 
 const Home: NextPage = () => {
   const [editing, setEditing] = useState(''); //if the user is editing the status
-  const [selectedStatusValue, setSelectedStatusValue] =
-    useState(disclosureStatus); //what the user has selected in the 'status' dropdown
+  const [selectedStatusValue, setSelectedStatusValue] = useState('started'); //what the user has selected in the 'status' dropdown
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
   const {
@@ -145,14 +144,12 @@ const Home: NextPage = () => {
                                   <span>Status:</span>
                                   {editing != d.id && (
                                     <>
-                                      <span>{disclosureStatus[d.status]}</span>
+                                      <span>{d.status}</span>
                                       <span
                                         className="w-6 text-slate-400 hover:cursor-pointer"
                                         onClick={() => {
                                           setEditing(d.id);
-                                          setSelectedStatusValue(
-                                            disclosureStatus[d.status]
-                                          );
+                                          setSelectedStatusValue(d.status);
                                         }}
                                       >
                                         [edit]
@@ -166,7 +163,7 @@ const Home: NextPage = () => {
                                         className="text-black"
                                         onChange={(e) => {
                                           setSelectedStatusValue(
-                                            e.target.value.toString()
+                                            e.target.value
                                           );
                                         }}
                                       >
@@ -188,7 +185,8 @@ const Home: NextPage = () => {
                                               .mutateAsync({
                                                 id: d.id,
                                                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                                                status: selectedStatusValue,
+                                                status:
+                                                  selectedStatusValue as keyof typeof disclosureStatus,
                                               })
                                               .catch(() => {
                                                 console.log(
