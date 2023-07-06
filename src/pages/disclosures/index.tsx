@@ -11,6 +11,8 @@ import { createCompareFn } from '~/shared/helpers';
 import { SeverityLabel } from '~/components/findings/severity-label';
 import { type Disclosure, disclosureStatus } from '@prisma/client';
 import { stringify } from 'csv-stringify/sync';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 function createFilterFn<T extends Disclosure>(query: string) {
   const filterFn = (d: Disclosure) => {
@@ -31,7 +33,9 @@ const Home: NextPage = () => {
   const [editing, setEditing] = useState(''); //if the user is editing the status
   const [selectedStatusValue, setSelectedStatusValue] = useState('started'); //what the user has selected in the 'status' dropdown
   const [updatedTicketURL, setUpdatedTicketURL] = useState('');
+
   const [updatedNotes, setUpdatedNotes] = useState('');
+
   const [expanded, setExpanded] = useState('');
   const [search] = useAtom(atomSearch);
   const {
@@ -188,7 +192,6 @@ const Home: NextPage = () => {
                                               setEditing(d.id);
                                               setSelectedStatusValue(d.status);
                                               setUpdatedTicketURL(d.ticketURL);
-                                              setUpdatedNotes(d.notes);
                                             }}
                                           >
                                             [edit]
@@ -308,20 +311,22 @@ const Home: NextPage = () => {
                                 <div className="">Notes:</div>
                                 {editing != d.id && (
                                   <div className="">
-                                    <div className="min-h-48 w-5/6 overflow-y-scroll">
-                                      {d.notes}
+                                    <div className="min-h-48 prose w-full overflow-y-scroll bg-white">
+                                      <ReactMarkdown
+                                        children={d.notes}
+                                        remarkPlugins={[remarkGfm]}
+                                      />
                                     </div>
                                   </div>
                                 )}
                                 {editing == d.id && (
-                                  <div className="">
+                                  <div className="  text-black">
                                     <textarea
-                                      className="min-h-40 max-h-96 w-5/6"
                                       value={updatedNotes}
                                       onChange={(e) => {
                                         setUpdatedNotes(e.target.value);
                                       }}
-                                    />
+                                    ></textarea>
                                   </div>
                                 )}
                               </div>
