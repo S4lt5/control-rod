@@ -152,7 +152,7 @@ const Home: NextPage = () => {
                             </div>
                             <div className="flex flex-col">
                               <div className="flex flex-row">
-                                <div className=" flex grow basis-1/2 flex-col justify-start py-4">
+                                <div className=" flex grow flex-col justify-start py-4">
                                   <SeverityLabel
                                     sval={d.severity}
                                   ></SeverityLabel>
@@ -178,87 +178,82 @@ const Home: NextPage = () => {
                                         ))}
                                     </ul>
                                   </div>
-                                </div>
-                                <div className="flex w-full   basis-1/2 flex-col justify-start  py-4 pl-4">
-                                  <div className="flex flex-row justify-start">
-                                    <div className="inline-flex items-start gap-2">
-                                      <span>Status:</span>
-                                      {editing != d.id && (
-                                        <>
-                                          <span>{d.status}</span>
-                                          <span
-                                            className="w-6 text-slate-400 hover:cursor-pointer"
-                                            onClick={() => {
-                                              setEditing(d.id);
-                                              setSelectedStatusValue(d.status);
-                                              setUpdatedTicketURL(d.ticketURL);
-                                            }}
-                                          >
-                                            [edit]
-                                          </span>
-                                        </>
-                                      )}
-                                      {editing == d.id && (
-                                        <>
-                                          <select
-                                            defaultValue={d.status}
-                                            className="bg-black text-white"
-                                            onChange={(e) => {
-                                              setSelectedStatusValue(
-                                                e.target.value
-                                              );
-                                            }}
-                                          >
-                                            {Object.entries(disclosureStatus)
-                                              .filter((k) =>
-                                                isNaN(Number(k[1]))
-                                              ) //value is not a number, value is the string rep
+                                  <div className="inline-flex items-start gap-2">
+                                    <span>Status:</span>
+                                    {editing != d.id && (
+                                      <>
+                                        <span>{d.status}</span>
+                                        <span
+                                          className="w-6 text-slate-400 hover:cursor-pointer"
+                                          onClick={() => {
+                                            setEditing(d.id);
+                                            setSelectedStatusValue(d.status);
+                                            setUpdatedTicketURL(d.ticketURL);
+                                            setUpdatedNotes(d.notes);
+                                          }}
+                                        >
+                                          [edit]
+                                        </span>
+                                      </>
+                                    )}
+                                    {editing == d.id && (
+                                      <>
+                                        <select
+                                          defaultValue={d.status}
+                                          className="bg-white text-black"
+                                          onChange={(e) => {
+                                            setSelectedStatusValue(
+                                              e.target.value
+                                            );
+                                          }}
+                                        >
+                                          {Object.entries(disclosureStatus)
+                                            .filter((k) => isNaN(Number(k[1]))) //value is not a number, value is the string rep
 
-                                              .map(([key, value]) => (
-                                                <option key={key} value={key}>
-                                                  {value}
-                                                </option>
-                                              ))}
-                                          </select>
-                                          <span></span>
-                                          {(selectedStatusValue != d.status ||
-                                            updatedTicketURL != d.ticketURL ||
-                                            updatedNotes != d.notes) && (
-                                            <span
-                                              className=" text-slate-400 hover:cursor-pointer"
-                                              onClick={() => {
-                                                void updateDisclosureStatus
-                                                  .mutateAsync({
-                                                    id: d.id,
-                                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                                                    status:
-                                                      selectedStatusValue as keyof typeof disclosureStatus,
-                                                    ticketURL: updatedTicketURL,
-                                                    notes: updatedNotes,
-                                                  })
-                                                  .catch(() => {
-                                                    console.log(
-                                                      'Error updating status value.'
-                                                    );
-                                                  })
-                                                  .then(() => {
-                                                    void fetchDisclosures();
-                                                  });
-                                                setEditing('');
-                                              }}
-                                            >
-                                              [save]
-                                            </span>
-                                          )}
+                                            .map(([key, value]) => (
+                                              <option key={key} value={key}>
+                                                {value}
+                                              </option>
+                                            ))}
+                                        </select>
+                                        <span></span>
+                                        {(selectedStatusValue != d.status ||
+                                          updatedTicketURL != d.ticketURL ||
+                                          updatedNotes != d.notes) && (
                                           <span
-                                            className="text-slate-400 hover:cursor-pointer"
-                                            onClick={() => setEditing('')}
+                                            className=" text-slate-400 hover:cursor-pointer"
+                                            onClick={() => {
+                                              void updateDisclosureStatus
+                                                .mutateAsync({
+                                                  id: d.id,
+                                                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                                  status:
+                                                    selectedStatusValue as keyof typeof disclosureStatus,
+                                                  ticketURL: updatedTicketURL,
+                                                  notes: updatedNotes,
+                                                })
+                                                .catch(() => {
+                                                  console.log(
+                                                    'Error updating status value.'
+                                                  );
+                                                })
+                                                .then(() => {
+                                                  void fetchDisclosures();
+                                                });
+                                              setEditing('');
+                                            }}
                                           >
-                                            [cancel]
+                                            [save]
                                           </span>
-                                        </>
-                                      )}
-                                    </div>
+                                        )}
+                                        <span
+                                          className="text-slate-400 hover:cursor-pointer"
+                                          onClick={() => setEditing('')}
+                                        >
+                                          [cancel]
+                                        </span>
+                                      </>
+                                    )}
                                   </div>
                                   <div className="flex  flex-row justify-start">
                                     <div className="inline-flex items-start gap-2">
@@ -268,7 +263,7 @@ const Home: NextPage = () => {
                                       )}
                                       {editing == d.id && (
                                         <input
-                                          className="bg-black text-white"
+                                          className="bg-white text-black"
                                           value={updatedTicketURL}
                                           onChange={(e) => {
                                             setUpdatedTicketURL(e.target.value);
@@ -276,6 +271,33 @@ const Home: NextPage = () => {
                                         />
                                       )}
                                     </div>
+                                  </div>
+
+                                  <div className="min-h-500">
+                                    <div className="">Notes:</div>
+                                    {editing != d.id && (
+                                      <div className="">
+                                        <div className="min-h-48 prose w-full bg-slate-600 text-white lg:prose-xl">
+                                          <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                          >
+                                            {d.notes}
+                                          </ReactMarkdown>
+                                        </div>
+                                      </div>
+                                    )}
+                                    {editing == d.id && (
+                                      <div className=" prose bg-white  text-black lg:prose-xl ">
+                                        <textarea
+                                          className="min-h-48 block h-full w-full w-full border-0"
+                                          rows={8}
+                                          value={updatedNotes}
+                                          onChange={(e) => {
+                                            setUpdatedNotes(e.target.value);
+                                          }}
+                                        ></textarea>
+                                      </div>
+                                    )}
                                   </div>
                                   <div className="flex flex-row justify-start ">
                                     <button
@@ -299,36 +321,13 @@ const Home: NextPage = () => {
                                     >
                                       <img
                                         alt="download template"
-                                        className="w-12"
+                                        className="w-10"
                                         src="/docx_icon.svg"
                                       ></img>
                                       Download Template
                                     </button>
                                   </div>
                                 </div>
-                              </div>
-                              <div className="min-h-500">
-                                <div className="">Notes:</div>
-                                {editing != d.id && (
-                                  <div className="">
-                                    <div className="min-h-48 prose w-full overflow-y-scroll bg-white">
-                                      <ReactMarkdown
-                                        children={d.notes}
-                                        remarkPlugins={[remarkGfm]}
-                                      />
-                                    </div>
-                                  </div>
-                                )}
-                                {editing == d.id && (
-                                  <div className="  text-black">
-                                    <textarea
-                                      value={updatedNotes}
-                                      onChange={(e) => {
-                                        setUpdatedNotes(e.target.value);
-                                      }}
-                                    ></textarea>
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
