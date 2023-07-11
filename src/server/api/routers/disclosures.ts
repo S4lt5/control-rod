@@ -35,7 +35,7 @@ export const disclosuresRouter = createTRPCRouter({
         hosts: z.string().nonempty(),
         severity: z.nativeEnum(severity),
         references: z.string(),
-        description: z.string().nonempty(),
+        description: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -46,7 +46,7 @@ export const disclosuresRouter = createTRPCRouter({
           template: input.template,
           status: disclosureStatus.started,
           ticketURL: '',
-          description: input.description,
+          description: input.description ?? ' ',
           severity: input.severity,
           references: input.references,
         },
