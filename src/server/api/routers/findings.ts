@@ -98,6 +98,13 @@ export const findingsRouter = createTRPCRouter({
                 },
               },
               {
+                NOT: {
+                  name: {
+                    contains: 'Open Proxy To Internal Network',
+                  },
+                },
+              },
+              {
                 OR: [
                   {
                     name: {
@@ -149,6 +156,13 @@ export const findingsRouter = createTRPCRouter({
                 NOT: {
                   name: {
                     contains: 'Weak Cipher Suites',
+                  },
+                },
+              },
+              {
+                NOT: {
+                  name: {
+                    contains: 'Open Proxy To Internal Network',
                   },
                 },
               },

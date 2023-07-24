@@ -10,6 +10,8 @@ export const disclosuresRouter = createTRPCRouter({
       z.object({
         id: z.string().nonempty(),
         status: z.nativeEnum(disclosureStatus),
+        ticketURL: z.string(),
+        notes: z.string(),
       })
     )
     .mutation(async ({ ctx, input }): Promise<boolean> => {
@@ -19,6 +21,8 @@ export const disclosuresRouter = createTRPCRouter({
         },
         data: {
           status: input.status,
+          ticketURL: input.ticketURL,
+          notes: input.notes,
         },
       });
       return true;
@@ -31,7 +35,7 @@ export const disclosuresRouter = createTRPCRouter({
         hosts: z.string().nonempty(),
         severity: z.nativeEnum(severity),
         references: z.string(),
-        description: z.string().nonempty(),
+        description: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -42,7 +46,7 @@ export const disclosuresRouter = createTRPCRouter({
           template: input.template,
           status: disclosureStatus.started,
           ticketURL: '',
-          description: input.description,
+          description: input.description ?? ' ',
           severity: input.severity,
           references: input.references,
         },
