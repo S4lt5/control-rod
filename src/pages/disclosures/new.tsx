@@ -242,7 +242,11 @@ const NewDisclosure: NextPage = () => {
                       findings
                         .filter(
                           (f) =>
-                            !disclosures.some((d) => d.hosts.includes(f.host))
+                            !disclosures.some(
+                              (d) =>
+                                d.template == f.template &&
+                                d.hosts.includes(f.host)
+                            )
                         )
                         .filter((f) => f.name == newDisclosure.name)
                         .map((f) => (
