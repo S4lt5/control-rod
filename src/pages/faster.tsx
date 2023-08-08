@@ -26,6 +26,10 @@ import { render } from 'react-dom';
 import { Finding } from '@prisma/client';
 
 const styles = {
+  tableCell: {
+    width: '8em',
+    display: 'inline-block',
+  },
   messagesContainer: {
     height: '100%',
     width: '100%',
@@ -71,18 +75,29 @@ const Home: NextPage = () => {
 
   function Row({ index, style }) {
     return (
-      <div style={style}>
-        <div
-          style={styles.newMessageContainer}
-          className="every_two_rows hover:cursor-pointer hover:bg-white/20"
-        >
-          <div>
-            <span>
-              {findings && findings[index] && findings[index].template}
-            </span>
+      <>
+        {findings && findings[index] && (
+          <div
+            style={style}
+            className={`${
+              (index + 1) % 2 === 0 ? 'bg-white/5' : ''
+            }  border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
+          >
+            <div style={styles.newMessageContainer}>
+              <div style={styles.tableCell}>{findings[index].name}</div>
+              <div style={styles.tableCell}>
+                <SeverityLabel sval={findings[index].severity} />
+              </div>
+              <div style={styles.tableCell}>{findings[index].host}</div>
+              <div style={styles.tableCell}>{findings[index].description}</div>
+              <div style={styles.tableCell}>
+                {findings[index].disclosureStatus ?? 'Not Started'}
+              </div>
+              <div style={styles.tableCell}>{findings[index].template}</div>
+            </div>
           </div>
-        </div>
-      </div>
+        )}
+      </>
     );
   }
 
