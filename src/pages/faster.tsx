@@ -1,11 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -27,7 +20,6 @@ import { Finding } from '@prisma/client';
 
 const styles = {
   tableCell: {
-    width: '8em',
     display: 'inline-block',
   },
   messagesContainer: {
@@ -76,24 +68,30 @@ const Home: NextPage = () => {
   function Row({ index, style }) {
     return (
       <>
-        {findings && findings[index] && (
+        {findings && (
           <div
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             style={style}
             className={`${
+              // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
               (index + 1) % 2 === 0 ? 'bg-white/5' : ''
             }  border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
           >
             <div style={styles.newMessageContainer}>
-              <div style={styles.tableCell}>{findings[index].name}</div>
-              <div style={styles.tableCell}>
-                <SeverityLabel sval={findings[index].severity} />
+              <div className="inline-block w-32">{findings[index]?.name}</div>
+              <div className="inline-block w-32">
+                <SeverityLabel sval={findings[index]?.severity} />
               </div>
-              <div style={styles.tableCell}>{findings[index].host}</div>
-              <div style={styles.tableCell}>{findings[index].description}</div>
-              <div style={styles.tableCell}>
-                {findings[index].disclosureStatus ?? 'Not Started'}
+              <div className="inline-block w-64">{findings[index]?.host}</div>
+              <div className="inline-block w-64">
+                {findings[index]?.description}
               </div>
-              <div style={styles.tableCell}>{findings[index].template}</div>
+              <div className="inline-block w-32">
+                {findings[index]?.disclosureStatus ?? 'Not Started'}
+              </div>
+              <div className="inline-block w-32">
+                {findings[index]?.template}
+              </div>
             </div>
           </div>
         )}
@@ -168,9 +166,11 @@ const Home: NextPage = () => {
               <AutoSizer>
                 {({ height, width }) => (
                   <List
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     height={height}
                     itemCount={findings.length}
                     itemSize={() => 75}
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     width={width}
                   >
                     {Row}
