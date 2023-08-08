@@ -19,6 +19,9 @@ import { render } from 'react-dom';
 import { Finding } from '@prisma/client';
 
 const styles = {
+  gutter: {
+    scrollbarGutter: 'stable',
+  },
   tableCell: {
     display: 'inline-block',
   },
@@ -75,21 +78,25 @@ const Home: NextPage = () => {
             className={`${
               // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
               (index + 1) % 2 === 0 ? 'bg-white/5' : ''
-            }  border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
+            } flex border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
           >
             <div style={styles.newMessageContainer}>
-              <div className="inline-block w-32">{findings[index]?.name}</div>
-              <div className="inline-block w-32">
+              <div className="inline-block w-48 flex-none border-r-2 border-gray-700 px-2">
+                {findings[index]?.name}
+              </div>
+              <div className="justify-left inline-block w-24 flex-none border-r-2 border-gray-700  px-4 py-4">
                 <SeverityLabel sval={findings[index]?.severity} />
               </div>
-              <div className="inline-block w-64">{findings[index]?.host}</div>
-              <div className="inline-block w-64">
+              <div className="min-w-48 inline-block w-64 flex-none  border-r-2 border-gray-700 px-2">
+                {findings[index]?.host}
+              </div>
+              <div className="inline-block w-64 flex-auto overflow-hidden border-r-2  border-gray-700 px-2">
                 {findings[index]?.description}
               </div>
-              <div className="inline-block w-32">
+              <div className="inline-block w-32 flex-none border-r-2  border-gray-700 px-2">
                 {findings[index]?.disclosureStatus ?? 'Not Started'}
               </div>
-              <div className="inline-block w-32">
+              <div className="inline-block w-48 flex-none overflow-hidden  border-r-2 border-gray-700 px-2">
                 {findings[index]?.template}
               </div>
             </div>
@@ -163,20 +170,49 @@ const Home: NextPage = () => {
             findingsStatus != 'loading' &&
             findings &&
             findings.length > 0 && (
-              <AutoSizer>
-                {({ height, width }) => (
-                  <List
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    height={height}
-                    itemCount={findings.length}
-                    itemSize={() => 75}
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    width={width}
-                  >
-                    {Row}
-                  </List>
-                )}
-              </AutoSizer>
+              <>
+                <div
+                  style={styles.gutter}
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
+                  className={` flex h-8 w-full overflow-y-scroll border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
+                >
+                  <div style={styles.newMessageContainer}>
+                    <div className="inline-block w-48 flex-none border-r-2 border-gray-700 px-2">
+                      Name
+                    </div>
+                    <div className="justify-left inline-block w-24 flex-none border-r-2 border-gray-700  px-4">
+                      Severity
+                    </div>
+                    <div className="min-w-48 inline-block w-64 flex-none  border-r-2 border-gray-700 px-2">
+                      Host
+                    </div>
+                    <div className="inline-block w-64 flex-auto overflow-hidden border-r-2  border-gray-700 px-2">
+                      Description
+                    </div>
+                    <div className="inline-block w-32 flex-none border-r-2  border-gray-700 px-2">
+                      Disclosure
+                    </div>
+                    <div className="inline-block w-48 flex-none overflow-hidden  border-r-2 border-gray-700 px-2 ">
+                      Template
+                    </div>
+                  </div>
+                </div>
+                <AutoSizer>
+                  {({ height, width }) => (
+                    <List
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                      height={height}
+                      itemCount={findings.length}
+                      itemSize={() => 80}
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                      width={width}
+                    >
+                      {Row}
+                    </List>
+                  )}
+                </AutoSizer>
+              </>
             )}
         </div>
       </div>
