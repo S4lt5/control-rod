@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { type NextPage } from 'next';
 import Head from 'next/head';
@@ -19,6 +20,10 @@ import { render } from 'react-dom';
 import { Finding } from '@prisma/client';
 
 const styles = {
+  selected: {
+    backgroundColor: 'black',
+    height: '200px',
+  },
   gutter: {
     scrollbarGutter: 'stable',
   },
@@ -42,10 +47,11 @@ const styles = {
     display: 'flex',
     flex: '0 0 auto',
     width: '100%',
+    height: '80px',
   },
 };
 const Home: NextPage = () => {
-  const [expanded, setExpanded] = useState('');
+  const [expanded, setExpanded] = useState(-1);
   const [search] = useAtom(atomSearch);
   const [hideDisclosed, setHideDisclosed] = useState(true);
 
@@ -71,16 +77,28 @@ const Home: NextPage = () => {
   function Row({ index, style }) {
     return (
       <>
-        {findings && (
+        {findings && findings[index] && findings[index] != undefined && (
           <div
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             style={style}
             className={`${
               // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
               (index + 1) % 2 === 0 ? 'bg-white/5' : ''
-            } flex border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
+            } ${
+              expanded == index ? 'selected-finding' : ''
+            }  h-48 overflow-hidden border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
           >
-            <div style={styles.newMessageContainer}>
+            <div
+              style={styles.newMessageContainer}
+              className="flex h-48 "
+              onClick={() => {
+                if (index == expanded) {
+                  setExpanded(-1);
+                } else {
+                  setExpanded(index);
+                }
+              }}
+            >
               <div className="inline-block w-48 flex-none border-r-2 border-gray-700 px-2">
                 {findings[index]?.name}
               </div>
@@ -100,6 +118,64 @@ const Home: NextPage = () => {
                 {findings[index]?.template}
               </div>
             </div>
+            {expanded == index && (
+              <div className="flex flex-row ">
+                <div className="w-24 shrink">
+                  <button
+                    className="align-center z-50 m-2 w-10 rotate-180 justify-center rounded bg-indigo-400 p-2 hover:bg-indigo-300"
+                    onClick={(evt) => {
+                      setExpanded(-1);
+                    }}
+                  >
+                    <img alt="expand finding" src="expand.svg"></img>
+                  </button>
+                </div>
+                <div className=" flex grow basis-1/2 flex-col justify-start py-4">
+                  <FindingsDetailBlock
+                    finding={findings[index]}
+                  ></FindingsDetailBlock>
+                </div>
+                <div className="flex grow basis-1/2 flex-col  py-4 pl-4">
+                  <ScanInformationBlock
+                    finding={findings[index]}
+                  ></ScanInformationBlock>
+                  <ul className="mt-4 flex grow flex-col">
+                    <li>
+                      Disclosure Status:{' '}
+                      {findings[index]?.disclosureStatus ?? 'Not Started'}
+                    </li>
+                    <li>
+                      <Link
+                        href={{
+                          pathname: '/disclosures/new',
+                          query: {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                            nd_name: findings[index]?.name,
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                            nd_host: findings[index]?.host,
+                          },
+                        }}
+                      >
+                        <button
+                          className="my-2 inline-flex  items-center rounded bg-indigo-400 p-2 align-middle text-white hover:bg-indigo-300"
+                          onClick={() => {
+                            setExpanded(-1);
+                          }}
+                        >
+                          <img
+                            alt="create new disclosure"
+                            className="mr-2 h-8 w-8 fill-white"
+                            src="new-document.svg"
+                          ></img>{' '}
+                          <span>Create new disclosure</span>
+                        </button>
+                      </Link>
+                    </li>
+                    <li>Ticket Status: Unknown</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </>
@@ -204,7 +280,9 @@ const Home: NextPage = () => {
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       height={height}
                       itemCount={findings.length}
-                      itemSize={() => 80}
+                      itemSize={(ix) => {
+                        return ix.toString() == expanded.toString() ? 200 : 80;
+                      }}
                       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       width={width}
                     >

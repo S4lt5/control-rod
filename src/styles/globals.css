@@ -8,6 +8,18 @@
     background-color: rgb(255 255 255 / 0.05);
   }
 }
+/* Gross hacks incoming */
+.selected-finding:hover {
+  background-color: rgb(17, 24, 39) !important;
+}
+
+.selected-finding {
+  background-color: rgb(17, 24, 39);
+
+  height: auto !important;
+  z-index: 25;
+}
+
 /* When an input with focus class is selected, show the next sibling '.show_on_focus'
    element
    http://jsfiddle.net/69zbhogL/
