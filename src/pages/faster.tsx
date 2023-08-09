@@ -26,6 +26,7 @@ const styles = {
   },
   gutter: {
     scrollbarGutter: 'stable',
+    overflow: 'hidden',
   },
   tableCell: {
     display: 'inline-block',
