@@ -1,11 +1,11 @@
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import { z } from 'zod';
 import { type Disclosure, disclosureStatus, severity } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { TemplateGenerator } from '~/shared/disclosure_template_generator';
 
 export const disclosuresRouter = createTRPCRouter({
-  updateDisclosureStatus: protectedProcedure
+  updateDisclosureStatus: publicProcedure
     .input(
       z.object({
         id: z.string().nonempty(),
@@ -27,7 +27,7 @@ export const disclosuresRouter = createTRPCRouter({
       });
       return true;
     }),
-  newDisclosure: protectedProcedure
+  newDisclosure: publicProcedure
     .input(
       z.object({
         name: z.string().nonempty(),
@@ -52,12 +52,12 @@ export const disclosuresRouter = createTRPCRouter({
         },
       });
     }),
-  getDisclosures: protectedProcedure.query(
+  getDisclosures: publicProcedure.query(
     async ({ ctx }): Promise<Disclosure[]> => {
       return await ctx.prisma.disclosure.findMany();
     }
   ),
-  generateDisclosureTemplate: protectedProcedure
+  generateDisclosureTemplate: publicProcedure
     .input(z.string())
     .mutation(async ({ ctx, input }): Promise<string> => {
       const foundDisclosure = await ctx.prisma.disclosure.findFirst({

@@ -1,5 +1,5 @@
 import { type SlowFindingsStore } from '~/shared/finding';
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import { FileFindingsStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
@@ -22,7 +22,7 @@ if (process.env.LONG_DATA_SOURCE == 'athena') {
 const FINDING_CACHE_MILLISECONDS = 30 * 60 * 1000; //how many seconds should we hold on to "fast" cache, default 60 minutes
 
 export const findingsRouter = createTRPCRouter({
-  getFindings: protectedProcedure
+  getFindings: publicProcedure
     .input(
       z
         .object({
