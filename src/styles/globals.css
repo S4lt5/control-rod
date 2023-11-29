@@ -2,13 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Used to apply even rows.. select the third row and every 4th row,... then it's next sibling (attached row detail) as well */
-.every_two_rows:nth-of-type(4n + 3) {
+.every_two_rows:nth-child(4n + 3) {
   background-color: rgb(255 255 255 / 0.05);
   & + .every_two_rows {
     background-color: rgb(255 255 255 / 0.05);
   }
 }
+/* Gross hacks incoming */
+.selected-finding:hover {
+  background-color: rgb(17, 24, 39) !important;
+}
+
+.selected-finding {
+  background-color: rgb(17, 24, 39);
+
+  height: auto !important;
+  z-index: 25;
+}
+
 /* When an input with focus class is selected, show the next sibling '.show_on_focus'
    element
    http://jsfiddle.net/69zbhogL/

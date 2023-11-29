@@ -1,5 +1,5 @@
 import { type SlowFindingsStore } from '~/shared/finding';
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, publicProcedure } from '~/server/api/trpc';
 import { FileFindingsStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
@@ -22,13 +22,18 @@ if (process.env.LONG_DATA_SOURCE == 'athena') {
 const FINDING_CACHE_MILLISECONDS = 30 * 60 * 1000; //how many seconds should we hold on to "fast" cache, default 60 minutes
 
 export const findingsRouter = createTRPCRouter({
-  getFindings: protectedProcedure
+  getFindings: publicProcedure
     .input(
       z
         .object({
           search: z.string().nullish(),
           forceRefresh: z.boolean().nullish(),
           hideDisclosed: z.boolean().nullish(),
+          hideCritical: z.boolean().nullish(),
+          hideHigh: z.boolean().nullish(),
+          hideMedium: z.boolean().nullish(),
+          hideLow: z.boolean().nullish(),
+          hideInfo: z.boolean().nullish(),
         })
         .nullish()
     )
@@ -181,6 +186,24 @@ export const findingsRouter = createTRPCRouter({
       if (input?.hideDisclosed) {
         findings = findings.filter((f) => !f.disclosureStatus);
       }
+      if (input?.hideCritical) {
+        findings = findings.filter((f) => f.severity != 'critical');
+      }
+      if (input?.hideHigh) {
+        findings = findings.filter((f) => f.severity != 'high');
+      }
+      if (input?.hideMedium) {
+        findings = findings.filter((f) => f.severity != 'medium');
+      }
+      if (input?.hideLow) {
+        findings = findings.filter((f) => f.severity != 'low');
+      }
+      if (input?.hideInfo) {
+        findings = findings.filter(
+          (f) => f.severity != 'info' && f.severity != 'unknown'
+        );
+      }
+
       return findings;
     }),
 });
