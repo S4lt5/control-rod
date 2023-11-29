@@ -26,21 +26,7 @@ export const LeftNav = () => {
                 </span>
               </Link>
             </li>
-            <li className="mr-3 flex-1">
-              <Link
-                href="/faster"
-                className={`block border-b-2  hover:border-pink-500  ${
-                  router.pathname == '/faster'
-                    ? 'border-pink-500'
-                    : 'border-transparent'
-                } py-1 pl-1 align-middle text-white no-underline hover:text-white md:py-3`}
-              >
-                <i className="fas fa-tasks pr-0 md:pr-3"></i>
-                <span className="block pb-1 text-xs text-gray-400 md:inline-block md:pb-0 md:text-base md:text-gray-200">
-                  Fast Findings (Test)
-                </span>
-              </Link>
-            </li>
+            <li className="mr-3 flex-1"></li>
             <li className="mr-3 flex-1">
               <Link
                 href="/disclosures"
