@@ -63,7 +63,7 @@ model VerificationToken {
 model Disclosure {
     id          String              @id @default(cuid())
     name        String
-    hosts       String              @db.VarChar(20000) //split by \n
+    hosts       String              @db.VarChar(16383) //split by \n
     template    String
     timestamp   DateTime            @default(now())
     status      disclosureStatus    @default(started)
