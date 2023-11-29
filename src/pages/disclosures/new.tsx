@@ -7,6 +7,7 @@ import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 import { type Finding } from '@prisma/client';
 import { createFindingFilterFn } from '~/shared/finding';
+import { array } from 'zod';
 
 const NewDisclosure: NextPage = () => {
   const router = useRouter();
@@ -229,6 +230,35 @@ const NewDisclosure: NextPage = () => {
             <p className={`my-2 ${!newDisclosure ? 'hidden' : ''}`}>
               ➡ Step 2: Choose related hosts, and submit.
             </p>
+            <p className="my-4">
+              <span
+                className="rounded bg-slate-700 p-2 hover:bg-indigo-200"
+                onClick={() => {
+                  if (!findings || !disclosures || !newDisclosure) {
+                    return;
+                  }
+                  if (newHosts && newHosts.length > 1) {
+                    //if there are some, unselect all
+                    setNewHosts([]);
+                  } else {
+                    const allHosts = findings
+                      .filter(
+                        (f) =>
+                          !disclosures.some(
+                            (d) =>
+                              d.template == f.template &&
+                              d.hosts.includes(f.host)
+                          )
+                      )
+                      .filter((f) => f.name == newDisclosure.name)
+                      .map((f) => f.host);
+                    setNewHosts(allHosts);
+                  }
+                }}
+              >
+                Select/Unselect All
+              </span>
+            </p>
             {newDisclosure && newDisclosure.hosts && (
               <div
                 className={`min-h-12 m-x-10 max-h-64 w-full overflow-y-scroll bg-slate-400  ${
@@ -277,7 +307,6 @@ const NewDisclosure: NextPage = () => {
                 </table>
               </div>
             )}
-
             <button
               type="submit"
               className={`${
