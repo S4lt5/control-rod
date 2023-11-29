@@ -29,6 +29,11 @@ export const findingsRouter = createTRPCRouter({
           search: z.string().nullish(),
           forceRefresh: z.boolean().nullish(),
           hideDisclosed: z.boolean().nullish(),
+          hideCritical: z.boolean().nullish(),
+          hideHigh: z.boolean().nullish(),
+          hideMedium: z.boolean().nullish(),
+          hideLow: z.boolean().nullish(),
+          hideInfo: z.boolean().nullish(),
         })
         .nullish()
     )
@@ -181,6 +186,24 @@ export const findingsRouter = createTRPCRouter({
       if (input?.hideDisclosed) {
         findings = findings.filter((f) => !f.disclosureStatus);
       }
+      if (input?.hideCritical) {
+        findings = findings.filter((f) => f.severity != 'critical');
+      }
+      if (input?.hideHigh) {
+        findings = findings.filter((f) => f.severity != 'high');
+      }
+      if (input?.hideMedium) {
+        findings = findings.filter((f) => f.severity != 'medium');
+      }
+      if (input?.hideLow) {
+        findings = findings.filter((f) => f.severity != 'low');
+      }
+      if (input?.hideInfo) {
+        findings = findings.filter(
+          (f) => f.severity != 'info' && f.severity != 'unknown'
+        );
+      }
+
       return findings;
     }),
 });
