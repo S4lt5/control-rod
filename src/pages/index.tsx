@@ -232,7 +232,21 @@ const Home: NextPage = () => {
                 onToggle={setHideInfo}
               />
             </div>
-
+            <div className="flex">
+              <div
+                className="hover:cursor-pointer"
+                onClick={(e) => {
+                  generateCSV();
+                  e.preventDefault();
+                }}
+              >
+                <img
+                  alt="export CSV"
+                  className="float-left h-6"
+                  src="/csv.png"
+                ></img>
+              </div>
+            </div>
             <div className="justify-end">
               <input
                 type="checkbox"
