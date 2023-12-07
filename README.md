@@ -27,11 +27,15 @@ And specify your artifacts bucket name in the AWS_BUCKET_NAME value.
 
 ## Local File Based / Developer Mode
 
-If you are NOT deploying to a cloud environment, or do not wish to use s3/athena, leave set LONG_DATA_SOURCE to either "json" or "csv"
+If you have not yet done so, copy `.env.example` to `.env` and select a LONG_DATA_SOURCE of either "json" or "csv"
 
 For "json", copy a result JSON output file from nuclei into ./data/findings.json (You may need to wrap the JSONLines output into an array to make it a proper JSON file)
 
 For "csv", copy a result csv file from a nucleearpond athena query to data/findings.csv
+
+You will then need to run the mysql database via `docker compose`. copy the `EXAMPLE-docker-compose.yml` to `docker-compose.yml` and change the root and controlrod passwords.
+
+Finally, update the `.env` file with the password you have created.
 
 # Disclosure Template
 
