@@ -107,9 +107,9 @@ model Finding {
     id               String    @id @default(cuid())
     extractedResults String    @db.VarChar(500)
     host             String
-    matchedAt        String    @db.VarChar(1000)
+    matchedAt        String    @db.VarChar(10000)
     template         String
-    timestamp        String
+    timestamp        String    @db.VarChar(700)
     description      String    @db.VarChar(3000)
     name             String
     severity         severity
