@@ -109,7 +109,7 @@ model Finding {
     host             String
     matchedAt        String    @db.VarChar(10000)
     template         String
-    timestamp        String    @db.VarChar(700)
+    timestamp        DateTime  @db.Timestamp(6)
     description      String    @db.VarChar(3000)
     name             String
     severity         severity
