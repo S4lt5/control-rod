@@ -3,7 +3,7 @@ import { AWSHelpers } from './aws_helpers';
 import { StartQueryExecutionCommand } from '@aws-sdk/client-athena';
 import { Finding, severity } from '@prisma/client';
 import { SlowFindingsStore } from './finding';
-
+import moment from 'moment';
 const awsBucketName = process.env.AWS_BUCKET_NAME ?? '';
 
 /**
@@ -57,8 +57,17 @@ export class AwsFindingStore implements SlowFindingsStore {
       const resultsBody = await AWSHelpers.runAthenaQuery(command);
       //convert csv into findings
       const records = AWSHelpers.ReadCSVFindings(resultsBody);
+
+      // Format timestamp before returning records
+      const formattedRecords = records.map((record) => {
+        return {
+          ...record,
+          timestamp: moment(record.timestamp).toDate(),
+        };
+      });
+
       //read body as CSV
-      return records;
+      return formattedRecords;
     } catch (err) {
       return [
         {

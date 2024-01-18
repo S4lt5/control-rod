@@ -4,6 +4,7 @@ import { promises as fs } from 'fs';
 import { AWSHelpers } from './aws_helpers';
 import { type SlowFindingsStore } from './finding';
 import { type Finding, severity } from '@prisma/client';
+import moment from 'moment';
 
 /*
 Similar to AWS Store, but reads an athena CSV File backup for easy pull to offline database
@@ -17,7 +18,16 @@ export class AthenaCSVFileStore implements SlowFindingsStore {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       //convert csv into findings
       const records = AWSHelpers.ReadCSVFindings(data);
-      return records;
+
+      // Format timestamp before returning records
+      const formattedRecords = records.map((record) => {
+        return {
+          ...record,
+          timestamp: moment(record.timestamp).toDate(),
+        };
+      });
+
+      return formattedRecords;
     } catch (err) {
       return [
         {

@@ -7,6 +7,7 @@ import {
   ConvertNestedFindingToFinding,
 } from './finding';
 import { type Finding, severity } from '@prisma/client';
+import moment from 'moment';
 
 export class FileFindingsStore implements SlowFindingsStore {
   async getFindings(): Promise<Finding[]> {
@@ -14,14 +15,26 @@ export class FileFindingsStore implements SlowFindingsStore {
       const dataDirectory = path.join(process.cwd(), 'data');
 
       const data = await fs.readFile(dataDirectory + '/findings.json', 'utf8');
+
+      // console.log('JSON Data:', data);
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const nested_findings: nestedFinding[] = JSON.parse(data);
       const flat_findings: Finding[] = nested_findings.map((f) =>
         ConvertNestedFindingToFinding(f)
       );
 
+      // Format timestamp before returning findings
+      const formattedFindings = flat_findings.map((flat_finding) => {
+        return {
+          ...flat_finding,
+          timestamp: moment(flat_finding.timestamp).toDate(),
+        };
+      });
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return flat_findings;
+
+      return formattedFindings;
     } catch (err) {
       return [
         {
