@@ -7,7 +7,6 @@ import {
   ConvertNestedFindingToFinding,
 } from './finding';
 import { type Finding, severity } from '@prisma/client';
-import moment from 'moment';
 
 export class FileFindingsStore implements SlowFindingsStore {
   async getFindings(): Promise<Finding[]> {
@@ -28,7 +27,7 @@ export class FileFindingsStore implements SlowFindingsStore {
       const formattedFindings = flat_findings.map((flat_finding) => {
         return {
           ...flat_finding,
-          timestamp: moment(flat_finding.timestamp).toDate(),
+          timestamp: new Date(flat_finding.timestamp).toISOString(),
         };
       });
 

@@ -54,6 +54,7 @@ export const findingsRouter = createTRPCRouter({
       //  or my I'm missing cache timestamp
       //  or my cache is stale
       //  then I need to invalidate the cache
+
       if (
         input?.forceRefresh ||
         lenFindings < 2 ||
@@ -62,13 +63,15 @@ export const findingsRouter = createTRPCRouter({
         ArbitraryFastFinding?.queryTimestamp < thirtyMinutesAgo
       ) {
         //this block is for when cache is expired, or is empty
-
         //get from the long findings store, clear the findings store, and insert new values
         const slowFindings = await slowFindingsStore.getFindings();
+        console.debug(slowFindings[0]);
         //clear old findings,
         await ctx.prisma.finding.deleteMany();
         //insert new findings
+        console.debug('debug');
         await ctx.prisma.finding.createMany({ data: slowFindings });
+        console.debug('debug2');
       }
 
       const disclosures = await ctx.prisma.disclosure.findMany();
