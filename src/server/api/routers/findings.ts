@@ -4,7 +4,7 @@ import { FileFindingsStore } from '~/shared/backend_file';
 import { AwsFindingStore } from '~/shared/backend_aws';
 import { AthenaCSVFileStore } from '~/shared/backend_athena_file_backup';
 import { z } from 'zod';
-import { type Finding } from '@prisma/client';
+import { Prisma, type Finding } from '@prisma/client';
 
 //We'll check each time we pull from fastFindingStore to see if the data is stale, and if so we'll update it in place
 //from the long data source defined here
@@ -64,17 +64,22 @@ export const findingsRouter = createTRPCRouter({
         ArbitraryFastFinding?.queryTimestamp < thirtyMinutesAgo
       ) {
         const slowFindings = await slowFindingsStore.getFindings();
-        await ctx.prisma.$transaction([
-          //this block is for when cache is expired, or is empty
-          //get from the long findings store, clear the findings store, and insert new values
-          //clear old findings,
-          ctx.prisma.finding.deleteMany(),
-          //insert new findings
-          ctx.prisma.finding.createMany({ data: slowFindings }),
-        ]);
+
+        await ctx.prisma.$transaction(
+          [
+            //this block is for when cache is expired, or is empty
+            //get from the long findings store, clear the findings store, and insert new values
+            //clear old findings,
+            ctx.prisma.finding.deleteMany(),
+            //insert new findings
+            ctx.prisma.finding.createMany({ data: slowFindings }),
+          ],
+          {
+            isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+          }
+        );
       }
       const disclosures = await ctx.prisma.disclosure.findMany();
-
       //perform filter before returning to client, if one was provided
       if (input && input.search) {
         findings = await ctx.prisma.finding.findMany({
