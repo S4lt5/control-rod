@@ -16,7 +16,7 @@ import { stringify } from 'csv-stringify/sync';
 import { FixedSizeList, FixedSizeListProps } from 'react-window';
 import { VariableSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-
+import moment from 'moment';
 import { render } from 'react-dom';
 import { Finding } from '@prisma/client';
 
@@ -60,6 +60,11 @@ const Home: NextPage = () => {
   const [hideMedium, setHideMedium] = useState(false);
   const [hideLow, setHideLow] = useState(false);
   const [hideInfo, setHideInfo] = useState(true);
+  const [sortDate, setSortDate] = useState(false);
+
+  const toggleDateSort = () => {
+    setSortDate((prevSortDate) => !prevSortDate);
+  };
 
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery({
@@ -70,6 +75,7 @@ const Home: NextPage = () => {
       hideMedium: hideMedium,
       hideLow: hideLow,
       hideInfo: hideInfo,
+      sortDate: sortDate,
     });
 
   const generateCSV = () => {
@@ -121,6 +127,9 @@ const Home: NextPage = () => {
               </div>
               <div className="inline-block w-64 flex-auto overflow-hidden border-r-2  border-gray-700 px-2">
                 {findings[index]?.description}
+              </div>
+              <div className="min-w-48 inline-block w-48 flex-none  border-r-2 border-gray-700 px-2">
+                {moment(findings[index]?.timestamp).format('MMMM DD, YYYY')}
               </div>
               <div className="inline-block w-32 flex-none border-r-2  border-gray-700 px-2">
                 {findings[index]?.disclosureStatus ?? 'Not Started'}
@@ -307,7 +316,7 @@ const Home: NextPage = () => {
                   style={styles.gutter}
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 
-                  className={` flex h-8 w-full overflow-y-scroll border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
+                  className={`flex h-8 w-full overflow-y-scroll border-b-2 border-gray-400 hover:cursor-pointer hover:bg-white/20`}
                 >
                   <div style={styles.newMessageContainer}>
                     <div className="inline-block w-48 flex-none border-r-2 border-gray-700 px-2">
@@ -316,11 +325,36 @@ const Home: NextPage = () => {
                     <div className="justify-left inline-block w-24 flex-none border-r-2 border-gray-700  px-4">
                       Severity
                     </div>
-                    <div className="min-w-48 inline-block w-64 flex-none  border-r-2 border-gray-700 px-2">
+                    <div className="min-w-48 inline-block w-64 flex-none border-r-2 border-gray-700 px-2">
                       Host
                     </div>
                     <div className="inline-block w-64 flex-auto overflow-hidden border-r-2  border-gray-700 px-2">
                       Description
+                    </div>
+                    <div className=" min-w-48 w-48 flex-none border-r-2 border-gray-700 pl-2">
+                      First Seen
+                      <button
+                        className={`ml-12 outline ${
+                          sortDate ? 'outline-blue-500' : 'outline-gray-500'
+                        }`}
+                        onClick={toggleDateSort}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          data-slot="icon"
+                          className="h-4 w-4"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12"
+                          />
+                        </svg>
+                      </button>
                     </div>
                     <div className="inline-block w-32 flex-none border-r-2  border-gray-700 px-2">
                       Disclosure

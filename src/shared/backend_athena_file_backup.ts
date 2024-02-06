@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import path from 'path';
+import path, { format } from 'path';
 import { promises as fs } from 'fs';
 import { AWSHelpers } from './aws_helpers';
 import { type SlowFindingsStore } from './finding';
@@ -11,13 +11,24 @@ Similar to AWS Store, but reads an athena CSV File backup for easy pull to offli
 export class AthenaCSVFileStore implements SlowFindingsStore {
   async getFindings(): Promise<Finding[]> {
     try {
+      console.debug('before slow fetch');
       const dataDirectory = path.join(process.cwd(), 'data');
 
       const data = await fs.readFile(dataDirectory + '/findings.csv', 'utf8');
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       //convert csv into findings
       const records = AWSHelpers.ReadCSVFindings(data);
-      return records;
+
+      // Format timestamp before returning records
+      const formattedRecords = records.map((record) => {
+        return {
+          ...record,
+          timestamp: record.timestamp,
+        };
+      });
+      console.debug(records[0]?.timestamp);
+      console.debug('after slow fetch');
+      return formattedRecords;
     } catch (err) {
       return [
         {
@@ -32,7 +43,7 @@ export class AthenaCSVFileStore implements SlowFindingsStore {
           host: '',
           matchedAt: '',
           template: '',
-          timestamp: '',
+          timestamp: new Date(),
           queryTimestamp: null,
           disclosureStatus: '',
         },

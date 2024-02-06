@@ -3,7 +3,6 @@ import { AWSHelpers } from './aws_helpers';
 import { StartQueryExecutionCommand } from '@aws-sdk/client-athena';
 import { Finding, severity } from '@prisma/client';
 import { SlowFindingsStore } from './finding';
-
 const awsBucketName = process.env.AWS_BUCKET_NAME ?? '';
 
 /**
@@ -34,7 +33,7 @@ export class AwsFindingStore implements SlowFindingsStore {
         //Group by host and name, and then left join for the other details
         //ignore the mountain of "Weak Cipher Suites..." findings
         QueryString:
-          "select ARBITRARY(\"extracted-results\"), host, ARBITRARY(\"matched-at\") as matchedAt, template, MAX(timestamp) \
+          "select ARBITRARY(\"extracted-results\"), host, ARBITRARY(\"matched-at\") as matchedAt, template, MIN(timestamp) as timestamp \
            , ARBITRARY(info.tags) as tags  \
            , ARBITRARY(info.reference) as reference \
            , ARBITRARY(info.description) as description \
@@ -57,8 +56,17 @@ export class AwsFindingStore implements SlowFindingsStore {
       const resultsBody = await AWSHelpers.runAthenaQuery(command);
       //convert csv into findings
       const records = AWSHelpers.ReadCSVFindings(resultsBody);
+
+      // Format timestamp before returning records
+      const formattedRecords = records.map((record) => {
+        return {
+          ...record,
+          timestamp: record.timestamp,
+        };
+      });
+
       //read body as CSV
-      return records;
+      return formattedRecords;
     } catch (err) {
       return [
         {
