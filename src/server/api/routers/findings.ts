@@ -34,6 +34,7 @@ export const findingsRouter = createTRPCRouter({
           hideMedium: z.boolean().nullish(),
           hideLow: z.boolean().nullish(),
           hideInfo: z.boolean().nullish(),
+          sortDate: z.boolean().nullish(),
         })
         .nullish()
     )
@@ -205,6 +206,12 @@ export const findingsRouter = createTRPCRouter({
         findings = findings.filter(
           (f) => f.severity != 'info' && f.severity != 'unknown'
         );
+      }
+      //if we're sorting, sort now
+      if (input?.sortDate) {
+        findings.sort((a, b) => {
+          return b.timestamp - a.timestamp;
+        });
       }
 
       return findings;

@@ -65,6 +65,7 @@ const Home: NextPage = () => {
   const toggleDateSort = () => {
     setSortDate((prevSortDate) => !prevSortDate);
   };
+
   const { data: findings, status: findingsStatus } =
     api.findings.getFindings.useQuery({
       search: search,
@@ -74,6 +75,7 @@ const Home: NextPage = () => {
       hideMedium: hideMedium,
       hideLow: hideLow,
       hideInfo: hideInfo,
+      sortDate: sortDate,
     });
 
   const generateCSV = () => {
@@ -90,14 +92,6 @@ const Home: NextPage = () => {
   };
 
   function Row({ index, style }) {
-    const sortedFindings = [...findings].sort((a, b) => {
-      const dateA = new Date(a.timestamp);
-      const dateB = new Date(b.timestamp);
-
-      return sortDate
-        ? dateB.getTime() - dateA.getTime()
-        : dateA.getTime() - dateB.getTime();
-    });
     return (
       <>
         {findings && findings[index] && findings[index] != undefined && (
@@ -123,41 +117,25 @@ const Home: NextPage = () => {
               }}
             >
               <div className="inline-block w-48 flex-none border-r-2 border-gray-700 px-2">
-                {sortDate ? sortedFindings[index]?.name : findings[index]?.name}
+                {findings[index]?.name}
               </div>
               <div className="justify-left inline-block w-24 flex-none border-r-2 border-gray-700  px-4 py-4">
-                <SeverityLabel
-                  sval={
-                    sortDate
-                      ? sortedFindings[index]?.severity
-                      : findings[index]?.severity
-                  }
-                />
+                <SeverityLabel sval={findings[index]?.severity} />
               </div>
               <div className="min-w-48 inline-block w-64 flex-none  border-r-2 border-gray-700 px-2">
-                {sortDate ? sortedFindings[index]?.host : findings[index]?.host}
+                {findings[index]?.host}
               </div>
               <div className="inline-block w-64 flex-auto overflow-hidden border-r-2  border-gray-700 px-2">
-                {sortDate
-                  ? sortedFindings[index]?.description
-                  : findings[index]?.description}
+                {findings[index]?.description}
               </div>
               <div className="min-w-48 inline-block w-48 flex-none  border-r-2 border-gray-700 px-2">
-                {moment(
-                  sortDate
-                    ? sortedFindings[index]?.timestamp
-                    : findings[index]?.timestamp
-                ).format('MMMM DD, YYYY')}
+                {moment(findings[index]?.timestamp).format('MMMM DD, YYYY')}
               </div>
               <div className="inline-block w-32 flex-none border-r-2  border-gray-700 px-2">
-                {(sortDate
-                  ? sortedFindings[index]?.disclosureStatus
-                  : findings[index]?.disclosureStatus) ?? 'Not Started'}
+                {findings[index]?.disclosureStatus ?? 'Not Started'}
               </div>
               <div className="inline-block w-48 flex-none overflow-hidden  border-r-2 border-gray-700 px-2">
-                {sortDate
-                  ? sortedFindings[index]?.template
-                  : findings[index]?.template}
+                {findings[index]?.template}
               </div>
             </div>
             {expanded == index && (
