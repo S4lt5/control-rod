@@ -63,18 +63,16 @@ export const findingsRouter = createTRPCRouter({
         !ArbitraryFastFinding?.queryTimestamp ||
         ArbitraryFastFinding?.queryTimestamp < thirtyMinutesAgo
       ) {
-        //this block is for when cache is expired, or is empty
-        //get from the long findings store, clear the findings store, and insert new values
         const slowFindings = await slowFindingsStore.getFindings();
-        console.debug(slowFindings[0]);
-        //clear old findings,
-        await ctx.prisma.finding.deleteMany();
-        //insert new findings
-        console.debug('debug');
-        await ctx.prisma.finding.createMany({ data: slowFindings });
-        console.debug('debug2');
+        await ctx.prisma.$transaction([
+          //this block is for when cache is expired, or is empty
+          //get from the long findings store, clear the findings store, and insert new values
+          //clear old findings,
+          ctx.prisma.finding.deleteMany(),
+          //insert new findings
+          ctx.prisma.finding.createMany({ data: slowFindings }),
+        ]);
       }
-
       const disclosures = await ctx.prisma.disclosure.findMany();
 
       //perform filter before returning to client, if one was provided
