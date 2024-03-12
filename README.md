@@ -37,6 +37,30 @@ You will then need to run the mysql database via `docker compose`. copy the `EXA
 
 Finally, update the `.env` file with the password you have created.
 
+## Nginx reverse proxy
+
+If you want to host this via nginx and expose the local dev port to external hosts, an example config file is contained in this repo at `example-nginx-config/sites-available`.
+
+First install nginx, then copy this file into `/etc/nginx/sites-available/default`
+
+Also, copy `example-nginx-config/snippets/*` to `/etc/nginx/snippets/`
+
+run the following in a root shell:
+
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+ufw allow 'Nginx Full'
+ufw delete allow 'Nginx HTTP'
+nginx -t
+```
+
+If there is no error, follow with
+```
+systemctl restart nginx
+```
+
+Finally run the following 
+
 # Disclosure Template
 
 In the `/artifacts` directory, there is a disclosure_template.docx file which contains a basic disclosure template with various `{field}` tags. This can be edited with your team's logo, letterhead, formatting to allow for quick generation of disclosure notices of a particular finding.
